@@ -44,10 +44,10 @@ public class DemoApplication {
 			ThreadPoolTaskExecutor taskExecutor = context.getBean(ThreadPoolTaskExecutor.class);
 
 			taskExecutor.execute(amazon_scrapper);
-			taskExecutor.execute(ebay_scrapper);
-			taskExecutor.execute(dx_scrapper);
-			taskExecutor.execute(newegg_scrapper);
-			taskExecutor.execute(bestbuy_scrapper);
+			// taskExecutor.execute(ebay_scrapper);
+			// taskExecutor.execute(dx_scrapper);
+			// taskExecutor.execute(newegg_scrapper);
+			// taskExecutor.execute(bestbuy_scrapper);
 
 			taskExecutor.shutdown();
 

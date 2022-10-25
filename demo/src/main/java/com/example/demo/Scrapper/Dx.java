@@ -10,7 +10,7 @@ public class Dx extends Thread {
   @Override
   public void run() {
     System.out.println(name + " Started.");
-    for (int i = 1; i <= 5; i++) {
+    for (int i = 1; i <= 2; i++) {
       System.out.println(i + " from " + name);
 
       try {
