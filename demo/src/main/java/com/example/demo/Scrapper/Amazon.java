@@ -117,21 +117,32 @@ public class Amazon extends Thread {
    * @return Monitor brand.
    */
   public String getProductBrand(Document productPage) {
-    return productPage.getElementsByClass("po-brand").last().firstElementChild().text();
+    return productPage.getElementsByClass("po-brand").first().lastElementChild().firstElementChild().text();
   }
 
   /**
    * 
    * @return Monitor model.
    */
-  public String getProductModel(Document productPage) {
+  public String getProductModel(Element productDetails) {
 
-    Elements details = productPage.getElementById("productDetails_techSpec_section_2").firstElementChild().children();
+    Element detail_section = productDetails.getElementById("prodDetails");
+    Element detail_table = detail_section.getElementById("productDetails_detailBullets_sections1");
 
-    for (Element detail : details) {
+    String model = "";
 
+    if (detail_table != null) {
+      Elements details = detail_table.firstElementChild().children();
+
+      for (Element detail : details) {
+        if (detail.select("th").text().contains("Item model number")) {
+          model = detail.select("td").text();
+          break;
+        }
+      }
     }
-    return "";
+
+    return model;
   }
 
   /**
@@ -139,7 +150,14 @@ public class Amazon extends Thread {
    * @return Monitor price.
    */
   public double getProductPrice(Document productPage) {
-    return 0.0;
+
+    Element price_section = productPage.select("div[class=a-box-group]").first()
+        .getElementById("corePrice_feature_div");
+
+    String price_str = price_section.select("span[class=a-offscreen]").first().text();
+    double price = Double.parseDouble(price_str.substring(1, price_str.length()));
+
+    return price;
   }
 
   /**
@@ -168,7 +186,7 @@ public class Amazon extends Thread {
 
   @Override
   public void run() {
-    System.out.println("[INFO]" + name + " Started.\n[INFO] Fetching " + pageQty + " pages.");
+    System.out.println("[INFO] " + name + " Started.\n[INFO] Fetching " + pageQty + " pages.");
 
     for (int pageNo = 1; pageNo <= pageQty; pageNo++) {
 
@@ -177,24 +195,27 @@ public class Amazon extends Thread {
 
       for (String link : productLinks) {
         Document productPage = getPage(baseURL + link);
+        Element productDetails = productPage.getElementById("productDetails_feature_div");
+
+        System.out.println(baseURL + link);
 
         String image = getProductImage(productPage);
         String title = getProductTitle(productPage);
         String brand = getProductBrand(productPage);
-        String model = getProductModel(productPage);
+        String model = getProductModel(productDetails);
         double price = getProductPrice(productPage);
         int displaySize = getProductSize(productPage);
         String displayResolution = getProductRes(productPage);
         int refreshRate = getProductRRate(productPage);
 
-        System.out.println("Image: " + image);
-        System.out.println("Title: " + title);
+        // System.out.println("Image: " + image);
+        // System.out.println("Title: " + title);
         System.out.println("Brand: " + brand);
-        System.out.println("Model: " + model);
+        // System.out.println("Model: " + model);
         System.out.println("Price: " + price);
-        System.out.println("Display size: " + displaySize);
-        System.out.println("Resolution: " + displayResolution);
-        System.out.println("Refresh Rate: " + refreshRate);
+        // System.out.println("Display size: " + displaySize);
+        // System.out.println("Resolution: " + displayResolution);
+        // System.out.println("Refresh Rate: " + refreshRate);
       }
       ;
       // Elements product_list =
