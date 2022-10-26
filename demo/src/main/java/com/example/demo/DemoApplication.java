@@ -34,7 +34,7 @@ public class DemoApplication {
 			ProductDetailsRepository productDetailsRepository) {
 		return args -> {
 
-			Amazon amazon_scrapper = new Amazon();
+			Amazon amazon_scrapper = new Amazon(2);
 			Ebay ebay_scrapper = new Ebay();
 			Dx dx_scrapper = new Dx();
 			NewEgg newegg_scrapper = new NewEgg();
