@@ -49,7 +49,7 @@ public class Product {
   private String image2Url;
 
   @Column(name = "price", nullable = true)
-  private float price;
+  private double price;
 
   // @OneToOne(mappedBy = "product", cascade = CascadeType.ALL)
   // @PrimaryKeyJoinColumn
@@ -59,7 +59,7 @@ public class Product {
   }
 
   public Product(String id, boolean inStock, String title, String url, String brand, Website website,
-      int websiteCustomerRating, String description, String imageUrl, String image2Url, float price) {
+      int websiteCustomerRating, String description, String imageUrl, String image2Url, double price) {
     this.id = id;
     this.inStock = inStock;
     this.title = title;
@@ -149,11 +149,11 @@ public class Product {
     this.image2Url = image2Url;
   }
 
-  public float getPrice() {
+  public double getPrice() {
     return price;
   }
 
-  public void setPrice(float price) {
+  public void setPrice(double price) {
     this.price = price;
   }
 }

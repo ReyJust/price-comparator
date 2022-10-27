@@ -1,14 +1,17 @@
 package com.example.demo.Scrapper;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.example.demo.Product.Product;
+import com.example.demo.Product.ProductRepository;
+import com.example.demo.Website.Website;
 
 public class Amazon extends Thread {
   private String name;
@@ -16,13 +19,19 @@ public class Amazon extends Thread {
   private String searchPageURL;
   private String userAgent;
   private int pageQty;
+  private Website websiteObject;
+
+  @Autowired
+  private ProductRepository productRepository;
 
   public Amazon(int pageQty) {
-    this.name = "Amazon Scrapper";
+    this.name = "Amazon";
     this.baseURL = "https://www.amazon.com/";
     this.searchPageURL = baseURL + "s?k=monitor&page=%d&ref=nb_sb_noss";
     this.userAgent = "Mozilla/5.0 (Windows; U; WindowsNT 5.1; en-US; rv1.8.1.6) Gecko/20070725 Firefox/2.0.0.6";
     this.pageQty = pageQty;
+    this.websiteObject = new Website("Amazon", "https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg",
+        baseURL);
   }
 
   /**
@@ -84,9 +93,10 @@ public class Amazon extends Thread {
     for (Element element : productList) {
       // String asin = element.attr("data-asin");
 
-      // We skip product without prices
+      // We skip sponsored products and ones without prices
       Element productHavePrice = element.select("span[class=a-price-whole]").first();
-      if (productHavePrice != null) {
+      Element isSponsored = element.select("div[class=a-row a-spacing-micro]").first();
+      if (productHavePrice != null && isSponsored == null) {
         String productUrl = element
             .select("a[class=a-link-normal s-underline-text s-underline-link-text s-link-style a-text-normal]")
             .attr("href");
@@ -153,14 +163,18 @@ public class Amazon extends Thread {
    * 
    * @return Monitor price.
    */
-  public double getProductPrice(Document productPage) {
+  public Double getProductPrice(Document productPage) {
+    Double price = null;
 
-    Element price_section = productPage.select("div[class=a-box-group]").first()
-        .getElementById("corePrice_feature_div");
+    try {
+      Element price_section = productPage.select("div[class=a-box-group]").first()
+          .getElementById("corePrice_feature_div");
 
-    String price_str = price_section.select("span[class=a-offscreen]").first().text();
-    double price = Double.parseDouble(price_str.substring(1, price_str.length()));
-
+      String price_str = price_section.select("span[class=a-offscreen]").first().text();
+      price = Double.parseDouble(price_str.substring(1, price_str.length()));
+    } catch (Exception e) {
+      // Not found. Keep it null.
+    }
     return price;
   }
 
@@ -216,7 +230,7 @@ public class Amazon extends Thread {
 
   @Override
   public void run() {
-    System.out.println("[INFO] " + name + " Started.\n[INFO] Fetching " + pageQty + " pages.");
+    System.out.println("[INFO] " + name + " Scrapper Started.\n[INFO] Fetching " + pageQty + " pages.");
 
     for (int pageNo = 1; pageNo <= pageQty; pageNo++) {
 
@@ -233,19 +247,25 @@ public class Amazon extends Thread {
         String title = getProductTitle(productPage);
         String brand = getProductBrand(productPage);
         String model = getProductModel(productDetails);
-        double price = getProductPrice(productPage);
+        Double price = getProductPrice(productPage);
         Integer screenSize = getProductScreenSize(productPage);
         String displayResolution = getProductDisplayResolution(productPage);
         Integer refreshRate = getProductRefreshRate(productPage);
 
-        System.out.println("Image: " + image);
-        System.out.println("Title: " + title);
-        System.out.println("Brand: " + brand);
-        System.out.println("Model: " + model);
-        System.out.println("Price: " + price);
-        System.out.println("Display size: " + screenSize);
-        System.out.println("Resolution: " + displayResolution);
-        System.out.println("Refresh Rate: " + refreshRate);
+        // System.out.println("Image: " + image);
+        // System.out.println("Title: " + title);
+        // System.out.println("Brand: " + brand);
+        // System.out.println("Model: " + model);
+        // System.out.println("Price: " + price);
+        // System.out.println("Display size: " + screenSize);
+        // System.out.println("Resolution: " + displayResolution);
+        // System.out.println("Refresh Rate: " + refreshRate);
+
+        Product product = new Product(model, true, title, baseURL + link, brand, this.websiteObject, 0,
+            "test", image, "test", price);
+
+        productRepository.save(product);
+
       }
       ;
       // Elements product_list =
