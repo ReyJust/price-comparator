@@ -84,11 +84,15 @@ public class Amazon extends Thread {
     for (Element element : productList) {
       // String asin = element.attr("data-asin");
 
-      String productUrl = element
-          .select("a[class=a-link-normal s-underline-text s-underline-link-text s-link-style a-text-normal]")
-          .attr("href");
+      // We skip product without prices
+      Element productHavePrice = element.select("span[class=a-price-whole]").first();
+      if (productHavePrice != null) {
+        String productUrl = element
+            .select("a[class=a-link-normal s-underline-text s-underline-link-text s-link-style a-text-normal]")
+            .attr("href");
 
-      productLinks.add(productUrl);
+        productLinks.add(productUrl);
+      }
 
     }
     System.out.println("[AMAZON][PAGE" + pageNo + "] Gathered " + productLinks.size() + " links.");
@@ -164,24 +168,50 @@ public class Amazon extends Thread {
    * 
    * @return Monitor size in inches.
    */
-  public int getProductSize(Document productPage) {
-    return 0;
+  public Integer getProductScreenSize(Document productPage) {
+    Integer size = null;
+    try {
+      String size_w_metric = productPage.getElementsByClass("po-display.size").first().lastElementChild()
+          .firstElementChild().text();
+
+      size = Integer.parseInt(size_w_metric.split(" ")[0]);
+    } catch (Exception e) {
+      // Not found. Keep it null.
+    }
+    return size;
   }
 
   /**
    * 
    * @return Monitor display resolution in pixels.
    */
-  public String getProductRes(Document productPage) {
-    return "";
+  public String getProductDisplayResolution(Document productPage) {
+    String res = null;
+    try {
+
+      res = productPage.getElementsByClass("po-display.resolution_maximum").first().lastElementChild()
+          .firstElementChild().text();
+    } catch (Exception e) {
+      // Not found. Keep it null.
+    }
+    return res;
   }
 
   /**
    * 
    * @return Monitor refresh rate in Hz.
    */
-  public int getProductRRate(Document productPage) {
-    return 0;
+  public Integer getProductRefreshRate(Document productPage) {
+    Integer rate = null;
+    try {
+      String rate_w_metric = productPage.getElementsByClass("po-refresh_rate").first().lastElementChild()
+          .firstElementChild().text();
+
+      rate = Integer.parseInt(rate_w_metric.split(" ")[0]);
+    } catch (Exception e) {
+      // Not found. Keep it null.
+    }
+    return rate;
   }
 
   @Override
@@ -204,18 +234,18 @@ public class Amazon extends Thread {
         String brand = getProductBrand(productPage);
         String model = getProductModel(productDetails);
         double price = getProductPrice(productPage);
-        int displaySize = getProductSize(productPage);
-        String displayResolution = getProductRes(productPage);
-        int refreshRate = getProductRRate(productPage);
+        Integer screenSize = getProductScreenSize(productPage);
+        String displayResolution = getProductDisplayResolution(productPage);
+        Integer refreshRate = getProductRefreshRate(productPage);
 
-        // System.out.println("Image: " + image);
-        // System.out.println("Title: " + title);
+        System.out.println("Image: " + image);
+        System.out.println("Title: " + title);
         System.out.println("Brand: " + brand);
-        // System.out.println("Model: " + model);
+        System.out.println("Model: " + model);
         System.out.println("Price: " + price);
-        // System.out.println("Display size: " + displaySize);
-        // System.out.println("Resolution: " + displayResolution);
-        // System.out.println("Refresh Rate: " + refreshRate);
+        System.out.println("Display size: " + screenSize);
+        System.out.println("Resolution: " + displayResolution);
+        System.out.println("Refresh Rate: " + refreshRate);
       }
       ;
       // Elements product_list =
