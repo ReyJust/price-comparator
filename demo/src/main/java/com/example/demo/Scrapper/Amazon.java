@@ -7,31 +7,29 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.springframework.beans.factory.annotation.Autowired;
+// import org.springframework.beans.factory.annotation.Autowired;
+// import org.springframework.stereotype.Component;
 
 import com.example.demo.Product.Product;
 import com.example.demo.Product.ProductRepository;
 import com.example.demo.Website.Website;
 
+// @Component
 public class Amazon extends Thread {
-  private String name;
-  private String baseURL;
+  private Website website;
+
   private String searchPageURL;
   private String userAgent;
   private int pageQty;
-  private Website websiteObject;
 
-  @Autowired
+  // @Autowired
   private ProductRepository productRepository;
 
-  public Amazon(int pageQty) {
-    this.name = "Amazon";
-    this.baseURL = "https://www.amazon.com/";
-    this.searchPageURL = baseURL + "s?k=monitor&page=%d&ref=nb_sb_noss";
-    this.userAgent = "Mozilla/5.0 (Windows; U; WindowsNT 5.1; en-US; rv1.8.1.6) Gecko/20070725 Firefox/2.0.0.6";
-    this.pageQty = pageQty;
-    this.websiteObject = new Website("Amazon", "https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg",
-        baseURL);
+  public Amazon(Website website, String userAgent) {
+    this.website = website;
+    this.searchPageURL = website.getUrl() + "/s?k=monitor&page=%d&ref=nb_sb_noss";
+    this.pageQty = 2;
+    this.userAgent = userAgent;
   }
 
   /**
@@ -44,7 +42,7 @@ public class Amazon extends Thread {
     String url;
     if (pageNo == 1) {
       // Page one have no http page param
-      url = baseURL + "s?k=monitor&ref=nb_sb_noss";
+      url = this.website.getUrl() + "/s?k=monitor&ref=nb_sb_noss";
     } else {
       url = String.format(searchPageURL, pageNo);
     }
@@ -68,7 +66,7 @@ public class Amazon extends Thread {
     try {
       // Connect to the page.
       page = Jsoup.connect(pageURL)
-          .userAgent(userAgent).get();
+          .userAgent(this.userAgent).get();
     } catch (Exception e) {
       System.out.println("[ERROR] Failed reaching page " + pageURL);
       e.printStackTrace();
@@ -105,7 +103,7 @@ public class Amazon extends Thread {
       }
 
     }
-    System.out.println("[AMAZON][PAGE" + pageNo + "] Gathered " + productLinks.size() + " links.");
+    System.out.println("[" + website + "][PAGE" + pageNo + "] Gathered " + productLinks.size() + " links.");
 
     return productLinks;
   }
@@ -230,7 +228,8 @@ public class Amazon extends Thread {
 
   @Override
   public void run() {
-    System.out.println("[INFO] " + name + " Scrapper Started.\n[INFO] Fetching " + pageQty + " pages.");
+    System.out
+        .println("[INFO] " + this.website.getTitle() + " Scrapper Started.\n[INFO] Fetching " + pageQty + " pages.");
 
     for (int pageNo = 1; pageNo <= pageQty; pageNo++) {
 
@@ -238,10 +237,8 @@ public class Amazon extends Thread {
       List<String> productLinks = getProductLinks(pageNo, searchPage);
 
       for (String link : productLinks) {
-        Document productPage = getPage(baseURL + link);
+        Document productPage = getPage(this.website.getUrl() + link);
         Element productDetails = productPage.getElementById("productDetails_feature_div");
-
-        System.out.println(baseURL + link);
 
         String image = getProductImage(productPage);
         String title = getProductTitle(productPage);
@@ -252,51 +249,28 @@ public class Amazon extends Thread {
         String displayResolution = getProductDisplayResolution(productPage);
         Integer refreshRate = getProductRefreshRate(productPage);
 
-        // System.out.println("Image: " + image);
-        // System.out.println("Title: " + title);
-        // System.out.println("Brand: " + brand);
-        // System.out.println("Model: " + model);
-        // System.out.println("Price: " + price);
-        // System.out.println("Display size: " + screenSize);
-        // System.out.println("Resolution: " + displayResolution);
-        // System.out.println("Refresh Rate: " + refreshRate);
+        // System.out.println(this.website.getUrl() + link);
+        System.out.println(String.format("""
+            ----------------\r
+              Image: %s\r
+              Title: %s\r
+              Brand: %s\r
+              Model: %s\r
+              Price: $ %f\r
+              Display size: %d\"\r
+              Resolution: %s\r
+              Refresh Rate: %d Hz\r
+              ----------------\n
+              """, image, title, brand, model, price, screenSize, displayResolution,
+            refreshRate));
 
-        Product product = new Product(model, true, title, baseURL + link, brand, this.websiteObject, 0,
+        Product product = new Product(model, true, title, this.website.getUrl() + link, brand, this.website, 0,
             "test", image, "test", price);
 
-        productRepository.save(product);
+        // productRepository.save(product);
 
       }
       ;
-      // Elements product_list =
-      // search_page.select("div[data-component-type=s-search-result]");
-
-      // getSearchPageProductList
-
-      // for (Element element : product_list) {
-      // String asin = element.attr("data-asin");
-      // System.out.println("[AMAZON][PAGE" + page_id + "] " + asin);
-      // String product_title =
-      // element.select("span.a-size-medium.a-color-base.a-text-normal").text();
-      // Elements product_prices = element.select("span.a-offscreen");
-      // float product_price;
-
-      // if (product_prices.size() > 1) {
-      // // Take the first price
-      // String price = product_prices.first().text();
-      // // Remove the currency sign
-      // product_price = Float.parseFloat(price.substring(1, price.length()));
-      // } else {
-      // product_price = 0;
-      // }
-      // String[] splitted_title = product_title.split(" ");
-      // System.out.println(splitted_title);
-      // String brand = splitted_title[0];
-      // String model = splitted_title[1];
-
-      // System.out.println(product_title + brand + model);
-
-      // }
 
     }
 

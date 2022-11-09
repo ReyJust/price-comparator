@@ -5,6 +5,9 @@ public class Ebay extends Thread {
 
   public Ebay() {
     this.name = "Ebay Scrapper";
+    /*
+     * https://www.walmart.com/search?q=monitor
+     */
   }
 
   @Override

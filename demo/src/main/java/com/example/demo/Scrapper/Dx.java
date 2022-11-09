@@ -5,6 +5,10 @@ public class Dx extends Thread {
 
   public Dx() {
     this.name = "Dx Scrapper";
+    /*
+     * https://www.adorama.com/l/Computers/Computer-Monitors-and-Mounts/Computer-
+     * Monitors
+     */
   }
 
   @Override

@@ -14,16 +14,16 @@ import com.example.demo.Product.Product;
 import com.example.demo.Product.ProductRepository;
 import com.example.demo.Website.Website;
 
-public class NewEgg extends Thread {
+public class Argos extends Thread {
   private Website website;
 
   private String searchPageURL;
   private String userAgent;
   private int pageQty;
 
-  public NewEgg(Website website, String userAgent) {
+  public Argos(Website website, String userAgent) {
     this.website = website;
-    this.searchPageURL = website.getUrl() + "/p/pl?d=monitor&page=%d";
+    this.searchPageURL = website.getUrl() + "/search/monitor/opt/page:%d";
     this.pageQty = 2;
     this.userAgent = userAgent;
   }
@@ -80,23 +80,23 @@ public class NewEgg extends Thread {
    */
   public List<String> getProductLinks(int pageNo, Document searchPage) {
     // Select the product list.
-    Elements productList = searchPage
-        .select("div.item-cells-wrap.border-cells.items-grid-view.four-cells.expulsion-one-cell");
+    Element productList = searchPage.select("div[data-test=product-list]").first();
+    System.out.println(productList);
 
     List<String> productLinks = new ArrayList<String>();
 
     try {
-      productList = productList.first().children();
+      // productList = productList.first().children();
 
-      for (Element element : productList) {
-        String productUrl = element
-            .select("a[class=item-title]")
-            .attr("href");
-        productLinks.add(productUrl);
+      // for (Element element : productList) {
+      // String productUrl = element
+      // .select("a[class=item-title]")
+      // .attr("href");
+      // productLinks.add(productUrl);
 
-        continue;
+      // continue;
 
-      }
+      // }
     } catch (Exception e) {
       // DO nothing.
     }
@@ -246,38 +246,41 @@ public class NewEgg extends Thread {
       List<String> productLinks = getProductLinks(pageNo, searchPage);
 
       for (String link : productLinks) {
-        Document productPage = getPage(link);
+        continue;
+        // Document productPage = getPage(link);
 
-        Element productDetails = productPage.getElementById("product-details");
+        // Element productDetails = productPage.getElementById("product-details");
 
-        Element productModelTable = productDetails.lastElementChild().child(1).select("caption:contains(Model)")
-            .first().parent();
-        Element productDisplayTable = productDetails.lastElementChild().child(1).select("caption:contains(Display)")
-            .first().parent();
+        // Element productModelTable =
+        // productDetails.lastElementChild().child(1).select("caption:contains(Model)")
+        // .first().parent();
+        // Element productDisplayTable =
+        // productDetails.lastElementChild().child(1).select("caption:contains(Display)")
+        // .first().parent();
 
-        String image = getProductImage(productPage);
-        String title = getProductTitle(productPage);
-        String brand = getProductBrand(productModelTable);
-        String model = getProductModel(productModelTable, brand);
-        Double price = getProductPrice(productPage);
-        Integer screenSize = getProductScreenSize(productDisplayTable);
-        String displayResolution = getProductDisplayResolution(productDisplayTable);
-        Integer refreshRate = getProductRefreshRate(productDisplayTable);
+        // String image = getProductImage(productPage);
+        // String title = getProductTitle(productPage);
+        // String brand = getProductBrand(productModelTable);
+        // String model = getProductModel(productModelTable, brand);
+        // Double price = getProductPrice(productPage);
+        // Integer screenSize = getProductScreenSize(productDisplayTable);
+        // String displayResolution = getProductDisplayResolution(productDisplayTable);
+        // Integer refreshRate = getProductRefreshRate(productDisplayTable);
 
-        // System.out.println(link);
-        System.out.println(String.format("""
-            ----------------\r
-            Image: %s\r
-            Title: %s\r
-            Brand: %s\r
-            Model: %s\r
-            Price: $ %f\r
-            Display size: %d\"\r
-            Resolution: %s\r
-            Refresh Rate: %d Hz\r
-            ----------------\n
-            """, image, title, brand, model, price, screenSize, displayResolution,
-            refreshRate));
+        // // System.out.println(link);
+        // System.out.println(String.format("""
+        // ----------------\r
+        // Image: %s\r
+        // Title: %s\r
+        // Brand: %s\r
+        // Model: %s\r
+        // Price: $ %f\r
+        // Display size: %d\"\r
+        // Resolution: %s\r
+        // Refresh Rate: %d Hz\r
+        // ----------------\n
+        // """, image, title, brand, model, price, screenSize, displayResolution,
+        // refreshRate));
 
         // Product product = new Product(model, true, title, link, brand,
         // this.website, 0,

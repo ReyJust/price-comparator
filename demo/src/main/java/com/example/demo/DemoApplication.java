@@ -16,10 +16,10 @@ import com.example.demo.Website.Website;
 import com.example.demo.Website.WebsiteRepository;
 
 import com.example.demo.Scrapper.Amazon;
-import com.example.demo.Scrapper.BestBuy;
-import com.example.demo.Scrapper.Dx;
-import com.example.demo.Scrapper.Ebay;
 import com.example.demo.Scrapper.NewEgg;
+import com.example.demo.Scrapper.Argos;
+// import com.example.demo.Scrapper.Dx;
+// import com.example.demo.Scrapper.Ebay;
 
 @SpringBootApplication
 public class DemoApplication {
@@ -34,20 +34,35 @@ public class DemoApplication {
 			ProductDetailsRepository productDetailsRepository) {
 		return args -> {
 
-			Amazon amazon_scrapper = new Amazon(2);
-			Ebay ebay_scrapper = new Ebay();
-			Dx dx_scrapper = new Dx();
-			NewEgg newegg_scrapper = new NewEgg();
-			BestBuy bestbuy_scrapper = new BestBuy();
+			String userAgent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36";
+
+			Website amazon = new Website("Amazon", "https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg",
+					"https://www.amazon.com");
+			Amazon amazonScrapper = new Amazon(amazon, userAgent);
+
+			Website newEgg = new Website("NewEgg",
+					"https://c1.neweggimages.com/WebResource/Themes/Nest/logos/Newegg_full_color_logo_RGB.SVG",
+					"https://www.newegg.com");
+			NewEgg newEggScrapper = new NewEgg(newEgg, userAgent);
+
+			Website argos = new Website("Argos",
+					"https://media.4rgos.it/i/Argos/logo_argos2x?w=120&h=103&qlt=75&fmt=png",
+					"https://www.argos.co.uk/");
+			Argos argosScrapper = new Argos(argos, userAgent);
+
+			// Ebay ebay_scrapper = new Ebay();
+			// Dx dx_scrapper = new Dx();
+			// BestBuy bestbuy_scrapper = new BestBuy();
 
 			ApplicationContext context = new AnnotationConfigApplicationContext(AsyncConfig.class);
 			ThreadPoolTaskExecutor taskExecutor = context.getBean(ThreadPoolTaskExecutor.class);
 
-			taskExecutor.execute(amazon_scrapper);
+			// taskExecutor.execute(amazonScrapper);
+			// taskExecutor.execute(newEggScrapper);
+			taskExecutor.execute(argosScrapper);
+
 			// taskExecutor.execute(ebay_scrapper);
 			// taskExecutor.execute(dx_scrapper);
-			// taskExecutor.execute(newegg_scrapper);
-			// taskExecutor.execute(bestbuy_scrapper);
 
 			taskExecutor.shutdown();
 
