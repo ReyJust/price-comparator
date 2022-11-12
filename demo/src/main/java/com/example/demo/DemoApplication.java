@@ -47,7 +47,7 @@ public class DemoApplication {
 
 			Website argos = new Website("Argos",
 					"https://media.4rgos.it/i/Argos/logo_argos2x?w=120&h=103&qlt=75&fmt=png",
-					"https://www.argos.co.uk/");
+					"https://www.argos.co.uk");
 			Argos argosScrapper = new Argos(argos, userAgent);
 
 			// Ebay ebay_scrapper = new Ebay();

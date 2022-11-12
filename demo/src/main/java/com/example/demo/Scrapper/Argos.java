@@ -79,24 +79,26 @@ public class Argos extends Thread {
    * @return
    */
   public List<String> getProductLinks(int pageNo, Document searchPage) {
-    // Select the product list.
-    Element productList = searchPage.select("div[data-test=product-list]").first();
-    System.out.println(productList);
 
     List<String> productLinks = new ArrayList<String>();
 
     try {
-      // productList = productList.first().children();
+      // Select the segmented product list.
+      Elements productGroupList = searchPage
+          .select("div[data-test=product-list]").first().children();
 
-      // for (Element element : productList) {
-      // String productUrl = element
-      // .select("a[class=item-title]")
-      // .attr("href");
-      // productLinks.add(productUrl);
+      // Loop in each list part
+      for (Element group : productGroupList) {
+        Elements list = group.firstElementChild().children();
+        // Loop in each product of the part
+        for (Element product : list) {
+          String productUrl = product.firstElementChild().firstElementChild().firstElementChild().select("a")
+              .attr("href");
+          productLinks.add(productUrl);
 
-      // continue;
+        }
 
-      // }
+      }
     } catch (Exception e) {
       // DO nothing.
     }
@@ -111,7 +113,17 @@ public class Argos extends Thread {
    * @return Monitor image.
    */
   public String getProductImage(Document productPage) {
-    return productPage.getElementsByClass("product-view-img-original").first().attr("src");
+    String image = null;
+    try {
+
+      Element imageContainer = productPage.select("div[data-test=component-media-gallery]").first();
+
+      image = imageContainer.firstElementChild().firstElementChild().select("picture > img").attr("src");
+    } catch (Exception e) {
+      // Not found. Keep it null.
+    }
+    // HTTP protocol not provided in link.
+    return "https" + image;
   }
 
   /**
@@ -119,7 +131,7 @@ public class Argos extends Thread {
    * @return Monitor title.
    */
   public String getProductTitle(Document productPage) {
-    return productPage.select("h1.product-title").first().text();
+    return productPage.select("span[data-test=product-title]").text();
   }
 
   /**
@@ -173,7 +185,7 @@ public class Argos extends Thread {
     Double price = null;
 
     try {
-      String price_raw = productPage.select("div[class=product-price]").first().select("li.price-current").text();
+      String price_raw = productPage.select("li[data-test=product-price-primary] > h2").text();
 
       price = Double.parseDouble(price_raw.substring(1, price_raw.length()));
 
@@ -246,8 +258,8 @@ public class Argos extends Thread {
       List<String> productLinks = getProductLinks(pageNo, searchPage);
 
       for (String link : productLinks) {
-        continue;
-        // Document productPage = getPage(link);
+        // Product Url are relative, adding base.
+        Document productPage = getPage(website.getUrl() + link);
 
         // Element productDetails = productPage.getElementById("product-details");
 
@@ -258,11 +270,12 @@ public class Argos extends Thread {
         // productDetails.lastElementChild().child(1).select("caption:contains(Display)")
         // .first().parent();
 
-        // String image = getProductImage(productPage);
-        // String title = getProductTitle(productPage);
+        String image = getProductImage(productPage);
+        String title = getProductTitle(productPage);
         // String brand = getProductBrand(productModelTable);
         // String model = getProductModel(productModelTable, brand);
-        // Double price = getProductPrice(productPage);
+        Double price = getProductPrice(productPage);
+        System.out.println(price);
         // Integer screenSize = getProductScreenSize(productDisplayTable);
         // String displayResolution = getProductDisplayResolution(productDisplayTable);
         // Integer refreshRate = getProductRefreshRate(productDisplayTable);
@@ -287,9 +300,9 @@ public class Argos extends Thread {
         // "test", image, "test", price);
 
         // productRepository.save(product);
-      }
-      ;
 
+        break;
+      }
     }
 
   }
