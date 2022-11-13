@@ -2,6 +2,8 @@ package com.example.demo.Scrapper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -136,45 +138,44 @@ public class Argos extends Thread {
 
   /**
    * 
-   * @return Monitor brand.
+   * @return Cannot find Model and Brand separately, Using regex to filter the
+   *         product title.
    */
-  public String getProductBrand(Element productModelTable) {
-    String brand = null;
+  public String decomposeTitle(String title) {
+    String brandModel = null;
     try {
+      Pattern regexPattern = Pattern.compile(".+?(?=\\s\\d{2,3})");
+      // Identified a pattern in product title.
+      // Always: [BRAND] [MODEL ?MODEL] [SIZE] ...
+      // Breaks the line when encountering the screen size, 2 or 3 digit, then first
+      // word is brand.
+      Matcher match = regexPattern.matcher(title);
 
-      brand = productModelTable.select("tr > th:contains(Brand) + td").text();
-
-      if (brand.contains("Universal")) {
-        brand = null;
-      } else if (brand.contains("\"")) {
-        brand = null;
+      if (match.find()) {
+        brandModel = match.group(0);
       }
 
     } catch (Exception e) {
       // Not found. Keep it null.
     }
 
-    return brand;
+    return brandModel;
+  }
+
+  /**
+   * 
+   * @return Monitor brand.
+   */
+  public String getProductBrand(String brandModel) {
+    return brandModel.substring(0, brandModel.indexOf(' '));
   }
 
   /**
    * 
    * @return Monitor model.
    */
-  public String getProductModel(Element productModelTable, String brand) {
-    String model = null;
-    try {
-      // model = productModelTable.get(1).text();
-      model = productModelTable.select("tr > th:contains(Model) + td").text();
-
-    } catch (Exception e) {
-      // Not found. Keep it null.
-    }
-    if (brand == null) {
-      return null;
-    }
-
-    return model;
+  public String getProductModel(String brandModel) {
+    return brandModel.substring(brandModel.indexOf(' '), brandModel.length());
   }
 
   /**
@@ -272,10 +273,14 @@ public class Argos extends Thread {
 
         String image = getProductImage(productPage);
         String title = getProductTitle(productPage);
-        // String brand = getProductBrand(productModelTable);
-        // String model = getProductModel(productModelTable, brand);
-        Double price = getProductPrice(productPage);
-        System.out.println(price);
+
+        String brandModel = decomposeTitle(title);
+
+        String brand = getProductBrand(brandModel);
+        String model = getProductModel(brandModel);
+
+        // Double price = getProductPrice(productPage);
+        // System.out.println(price);
         // Integer screenSize = getProductScreenSize(productDisplayTable);
         // String displayResolution = getProductDisplayResolution(productDisplayTable);
         // Integer refreshRate = getProductRefreshRate(productDisplayTable);
