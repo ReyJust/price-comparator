@@ -200,13 +200,13 @@ public class Argos extends Thread {
    * 
    * @return Monitor size in inches.
    */
-  public Integer getProductScreenSize(Element productDisplayTable) {
+  public Integer getProductScreenSize(Element productPage) {
     Integer size = null;
-
     try {
-      String size_w_metric = productDisplayTable.select("tr > th:contains(Screen Size) + td").text();
+      String size_w_metric = productPage.select("div.product-description-content-text > ul").first().firstElementChild()
+          .text();
 
-      size = Integer.parseInt(size_w_metric.split("\"")[0]);
+      size = Integer.parseInt(size_w_metric.split("in")[0]);
     } catch (Exception e) {
       // Not found. Keep it null.
     }
@@ -217,14 +217,19 @@ public class Argos extends Thread {
    * 
    * @return Monitor display resolution in pixels.
    */
-  public String getProductDisplayResolution(Element productDisplayTable) {
+  public String getProductDisplayResolution(Element productPage) {
     String res = null;
 
     try {
-      res = productDisplayTable.select("tr > th:contains(Recommended Resolution) + td").text();
+      String resRow = productPage.select("div.product-description-content-text > ul > li:contains(Resolution)").text();
 
-      // Removes the (2K) (4K) at the end
-      res = res.substring(0, res.lastIndexOf(" "));
+      // Split str to get the 0000 x 0000 pattern.
+      Pattern regexPattern = Pattern.compile("(\\b\\d+\\sx\\s\\d+\\b)");
+      Matcher match = regexPattern.matcher(resRow);
+
+      if (match.find()) {
+        res = match.group(0);
+      }
 
     } catch (Exception e) {
       // Not found. Keep it null.
@@ -236,13 +241,20 @@ public class Argos extends Thread {
    * 
    * @return Monitor refresh rate in Hz.
    */
-  public Integer getProductRefreshRate(Element productDisplayTable) {
+  public Integer getProductRefreshRate(Element productPage) {
     Integer rate = null;
     try {
+      String rateRow = productPage.select("div.product-description-content-text > ul > li:contains(refresh rate)")
+          .text();
+      System.out.println(rateRow);
 
-      String rate_w_metric = productDisplayTable.select("tr > th:contains(Refresh Rate) + td").text();
+      // Split str to get the 00Hz pattern excluding Hz.
+      Pattern regexPattern = Pattern.compile("(\\b\\d{2,3})Hz\\b");
+      Matcher match = regexPattern.matcher(rateRow);
 
-      rate = Integer.parseInt(rate_w_metric.split(" ")[0]);
+      if (match.find()) {
+        rate = Integer.parseInt(match.group(1));
+      }
     } catch (Exception e) {
       // Not found. Keep it null.
     }
@@ -262,15 +274,6 @@ public class Argos extends Thread {
         // Product Url are relative, adding base.
         Document productPage = getPage(website.getUrl() + link);
 
-        // Element productDetails = productPage.getElementById("product-details");
-
-        // Element productModelTable =
-        // productDetails.lastElementChild().child(1).select("caption:contains(Model)")
-        // .first().parent();
-        // Element productDisplayTable =
-        // productDetails.lastElementChild().child(1).select("caption:contains(Display)")
-        // .first().parent();
-
         String image = getProductImage(productPage);
         String title = getProductTitle(productPage);
 
@@ -278,27 +281,25 @@ public class Argos extends Thread {
 
         String brand = getProductBrand(brandModel);
         String model = getProductModel(brandModel);
+        Double price = getProductPrice(productPage);
+        Integer screenSize = getProductScreenSize(productPage);
+        String displayResolution = getProductDisplayResolution(productPage);
+        Integer refreshRate = getProductRefreshRate(productPage);
 
-        // Double price = getProductPrice(productPage);
-        // System.out.println(price);
-        // Integer screenSize = getProductScreenSize(productDisplayTable);
-        // String displayResolution = getProductDisplayResolution(productDisplayTable);
-        // Integer refreshRate = getProductRefreshRate(productDisplayTable);
-
-        // // System.out.println(link);
-        // System.out.println(String.format("""
-        // ----------------\r
-        // Image: %s\r
-        // Title: %s\r
-        // Brand: %s\r
-        // Model: %s\r
-        // Price: $ %f\r
-        // Display size: %d\"\r
-        // Resolution: %s\r
-        // Refresh Rate: %d Hz\r
-        // ----------------\n
-        // """, image, title, brand, model, price, screenSize, displayResolution,
-        // refreshRate));
+        // System.out.println(link);
+        System.out.println(String.format("""
+            ----------------\r
+            Image: %s\r
+            Title: %s\r
+            Brand: %s\r
+            Model: %s\r
+            Price: $ %f\r
+            Display size: %d\"\r
+            Resolution: %s\r
+            Refresh Rate: %d Hz\r
+            ----------------\n
+            """, image, title, brand, model, price, screenSize, displayResolution,
+            refreshRate));
 
         // Product product = new Product(model, true, title, link, brand,
         // this.website, 0,
@@ -306,7 +307,12 @@ public class Argos extends Thread {
 
         // productRepository.save(product);
 
-        break;
+        try {
+          Thread.sleep(1000);
+        } catch (InterruptedException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
       }
     }
 
