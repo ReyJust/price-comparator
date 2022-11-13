@@ -120,16 +120,7 @@ public class Flipkart extends Thread {
   public String getProductImage(Document productPage) {
     String image = null;
     try {
-      // image =
-      // productPage.select("img._396cs4._2amPTt._3qGmMb._3exPp9").first().attr("src");
-
-      // System.out
-      // .println(
-      // productPage.select("div#container").first().firstElementChild().child(2).select("div._1YokD2._2GoDe3")
-      // .first().firstElementChild().firstElementChild());//
-      // .firstElementChild().attributes());
-      // .select("div._2c7YLP.UtUXW0._6t1WkM._3HqJxg")
-      // .select("div._1YokD2._3Mn1Gg.col-5-12._78xt5Y"));
+      image = productPage.select("img._396cs4._2amPTt._3qGmMb._3exPp9").attr("href");
 
     } catch (Exception e) {
       // Not found. Keep it null.
@@ -143,7 +134,7 @@ public class Flipkart extends Thread {
    * @return Monitor title.
    */
   public String getProductTitle(Document productPage) {
-    return productPage.select("span[data-test=product-title]").text();
+    return productPage.select("span.B_NuCI").first().text();
   }
 
   /**
@@ -176,16 +167,57 @@ public class Flipkart extends Thread {
    * 
    * @return Monitor brand.
    */
-  public String getProductBrand(String brandModel) {
-    return brandModel.substring(0, brandModel.indexOf(' '));
+  public String getProductBrand(String title) {
+    // First word of title
+    return title.substring(0, title.indexOf(' '));
+  }
+
+  /**
+   * 
+   * @return Specification Table.
+   */
+  public Elements getSpecificationTable(Element productPage) {
+    Elements table = null;
+
+    try {
+      table = productPage.select("div._3dtsli > div > div:contains(General)").parents();
+
+    } catch (Exception e) {
+      // Not found. Keep it null.
+    }
+    return table;
+  }
+
+  /**
+   * 
+   * @return Display Features Specification Table.
+   */
+  public Elements getDisplaySpecificationTable(Element productPage) {
+    Elements table = null;
+
+    try {
+      table = productPage.select("div._3dtsli > div > div:contains(Display Features)").parents();
+
+    } catch (Exception e) {
+      // Not found. Keep it null.
+    }
+    return table;
   }
 
   /**
    * 
    * @return Monitor model.
    */
-  public String getProductModel(String brandModel) {
-    return brandModel.substring(brandModel.indexOf(' '), brandModel.length());
+  public String getProductModel(Elements specTable) {
+    String model = null;
+
+    try {
+      model = specTable.select("table > tbody > tr > td:contains(Model Name) + td > ul > li").text();
+
+    } catch (Exception e) {
+      // Not found. Keep it null.
+    }
+    return model;
   }
 
   /**
@@ -196,9 +228,9 @@ public class Flipkart extends Thread {
     Double price = null;
 
     try {
-      String price_raw = productPage.select("li[data-test=product-price-primary] > h2").text();
+      String priceRaw = productPage.select("div._30jeq3._16Jk6d").first().text();
 
-      price = Double.parseDouble(price_raw.substring(1, price_raw.length()));
+      price = Double.parseDouble(priceRaw.substring(1, priceRaw.length()).replace(",", "."));
 
     } catch (Exception e) {
       // Not found. Keep it null.
@@ -210,13 +242,18 @@ public class Flipkart extends Thread {
    * 
    * @return Monitor size in inches.
    */
-  public Integer getProductScreenSize(Element productPage) {
+  public Integer getProductScreenSize(Elements specTable) {
     Integer size = null;
     try {
-      String size_w_metric = productPage.select("div.product-description-content-text > ul").first().firstElementChild()
-          .text();
+      String displayStr = specTable.select("table > tbody > tr > td:contains(Display) + td > ul > li").text();
 
-      size = Integer.parseInt(size_w_metric.split("in")[0]);
+      Pattern regexPattern = Pattern.compile("\\((\\d{2}).+\\)");
+      Matcher match = regexPattern.matcher(displayStr);
+
+      if (match.find()) {
+        size = Integer.parseInt(match.group(1).split(" ")[0]);
+      }
+
     } catch (Exception e) {
       // Not found. Keep it null.
     }
@@ -227,23 +264,22 @@ public class Flipkart extends Thread {
    * 
    * @return Monitor display resolution in pixels.
    */
-  public String getProductDisplayResolution(Element productPage) {
+  public String getProductDisplayResolution(Elements specTable) {
     String res = null;
 
     try {
-      String resRow = productPage.select("div.product-description-content-text > ul > li:contains(Resolution)").text();
+      res = specTable.select("table > tbody > tr > td:contains(Resolution) + td > ul > li").first().text();
 
-      // Split str to get the 0000 x 0000 pattern.
-      Pattern regexPattern = Pattern.compile("(\\b\\d+\\sx\\s\\d+\\b)");
-      Matcher match = regexPattern.matcher(resRow);
-
-      if (match.find()) {
-        res = match.group(0);
-      }
+      res = res.substring(0, res.lastIndexOf(" "));
 
     } catch (Exception e) {
       // Not found. Keep it null.
     }
+
+    if (res.indexOf('x') == -1) {
+      res = null;
+    }
+
     return res;
   }
 
@@ -251,23 +287,19 @@ public class Flipkart extends Thread {
    * 
    * @return Monitor refresh rate in Hz.
    */
-  public Integer getProductRefreshRate(Element productPage) {
+  public Integer getProductRefreshRate(Elements displaySpecTable) {
     Integer rate = null;
+
     try {
-      String rateRow = productPage.select("div.product-description-content-text > ul > li:contains(refresh rate)")
-          .text();
-      System.out.println(rateRow);
+      String rateWithMetric = displaySpecTable
+          .select("table > tbody > tr > td:contains(Maximum Refresh Rate) + td > ul > li").text();
 
-      // Split str to get the 00Hz pattern excluding Hz.
-      Pattern regexPattern = Pattern.compile("(\\b\\d{2,3})Hz\\b");
-      Matcher match = regexPattern.matcher(rateRow);
+      rate = Integer.parseInt(rateWithMetric.substring(0, rateWithMetric.indexOf(' ')));
 
-      if (match.find()) {
-        rate = Integer.parseInt(match.group(1));
-      }
     } catch (Exception e) {
       // Not found. Keep it null.
     }
+
     return rate;
   }
 
@@ -283,51 +315,51 @@ public class Flipkart extends Thread {
       List<String> productLinks = getProductLinks(pageNo, searchPage);
 
       for (String link : productLinks) {
-        System.out.println(website.getUrl() + link);
+
         // Product Url are relative, adding base.
-        // Document productPage = getPage(website.getUrl() + link);
+        Document productPage = getPage(website.getUrl() + link);
 
-        // String image = getProductImage(productPage);
-        // System.out.println(image);
-        // String title = getProductTitle(productPage);
+        String image = getProductImage(productPage);
+        String title = getProductTitle(productPage);
+        String brand = getProductBrand(title);
 
-        // String brandModel = decomposeTitle(title);
+        Elements specTable = getSpecificationTable(productPage);
+        String model = getProductModel(specTable);
 
-        // String brand = getProductBrand(brandModel);
-        // String model = getProductModel(brandModel);
-        // Double price = getProductPrice(productPage);
-        // Integer screenSize = getProductScreenSize(productPage);
-        // String displayResolution = getProductDisplayResolution(productPage);
-        // Integer refreshRate = getProductRefreshRate(productPage);
+        Double price = getProductPrice(productPage);
 
-        // // System.out.println(link);
-        // System.out.println(String.format("""
-        // ----------------\r
-        // Image: %s\r
-        // Title: %s\r
-        // Brand: %s\r
-        // Model: %s\r
-        // Price: $ %f\r
-        // Display size: %d\"\r
-        // Resolution: %s\r
-        // Refresh Rate: %d Hz\r
-        // ----------------\n
-        // """, image, title, brand, model, price, screenSize, displayResolution,
-        // refreshRate));
+        Integer screenSize = getProductScreenSize(specTable);
+        String displayResolution = getProductDisplayResolution(specTable);
+
+        Elements displaySpecTable = getSpecificationTable(productPage);
+        Integer refreshRate = getProductRefreshRate(displaySpecTable);
+
+        System.out.println(website.getUrl() + link);
+        System.out.println(String.format("""
+            ----------------\r
+            Image: %s\r
+            Title: %s\r
+            Brand: %s\r
+            Model: %s\r
+            Price: $ %f\r
+            Display size: %d\"\r
+            Resolution: %s\r
+            Refresh Rate: %d Hz\r
+            ----------------\n
+            """, image, title, brand, model, price, screenSize, displayResolution,
+            refreshRate));
 
         // Product product = new Product(model, true, title, link, brand,
         // this.website, 0,
         // "test", image, "test", price);
 
         // productRepository.save(product);
-
-        break;
-      }
-      try {
-        Thread.sleep(1000);
-      } catch (InterruptedException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+        try {
+          Thread.sleep(1000);
+        } catch (InterruptedException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
       }
 
     }
