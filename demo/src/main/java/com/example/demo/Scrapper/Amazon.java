@@ -269,6 +269,12 @@ public class Amazon extends Thread {
 
         // productRepository.save(product);
 
+        try {
+          Thread.sleep(1000);
+        } catch (InterruptedException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
       }
       ;
 

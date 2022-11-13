@@ -18,7 +18,7 @@ import com.example.demo.Website.WebsiteRepository;
 import com.example.demo.Scrapper.Amazon;
 import com.example.demo.Scrapper.NewEgg;
 import com.example.demo.Scrapper.Argos;
-// import com.example.demo.Scrapper.Dx;
+import com.example.demo.Scrapper.Flipkart;
 // import com.example.demo.Scrapper.Ebay;
 
 @SpringBootApplication
@@ -50,6 +50,11 @@ public class DemoApplication {
 					"https://www.argos.co.uk");
 			Argos argosScrapper = new Argos(argos, userAgent);
 
+			Website flipkart = new Website("Flipkart",
+					"https://1000logos.net/wp-content/uploads/2021/02/Flipkart-logo.png",
+					"https://www.flipkart.com");
+			Flipkart flipkartScrapper = new Flipkart(flipkart, userAgent);
+
 			// Ebay ebay_scrapper = new Ebay();
 			// Dx dx_scrapper = new Dx();
 			// BestBuy bestbuy_scrapper = new BestBuy();
@@ -59,9 +64,9 @@ public class DemoApplication {
 
 			// taskExecutor.execute(amazonScrapper);
 			// taskExecutor.execute(newEggScrapper);
-			taskExecutor.execute(argosScrapper);
+			// taskExecutor.execute(argosScrapper);
+			taskExecutor.execute(flipkartScrapper);
 
-			// taskExecutor.execute(ebay_scrapper);
 			// taskExecutor.execute(dx_scrapper);
 
 			taskExecutor.shutdown();

@@ -284,6 +284,12 @@ public class NewEgg extends Thread {
         // "test", image, "test", price);
 
         // productRepository.save(product);
+        try {
+          Thread.sleep(1000);
+        } catch (InterruptedException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
       }
       ;
 
