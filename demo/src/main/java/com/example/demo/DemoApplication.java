@@ -14,7 +14,7 @@ import com.example.demo.ProductDetails.ProductDetails;
 import com.example.demo.ProductDetails.ProductDetailsRepository;
 import com.example.demo.Website.Website;
 import com.example.demo.Website.WebsiteRepository;
-
+import com.example.demo.Scrapper.Bh;
 import com.example.demo.Scrapper.Amazon;
 import com.example.demo.Scrapper.NewEgg;
 import com.example.demo.Scrapper.Argos;
@@ -55,6 +55,11 @@ public class DemoApplication {
 					"https://www.flipkart.com");
 			Flipkart flipkartScrapper = new Flipkart(flipkart, userAgent);
 
+			Website bh = new Website("BH",
+					"https://simplr.us/wp-content/uploads/2021/10/B_H_Logo_2021.png",
+					"https://www.box.co.uk");
+			Bh bhScrapper = new Bh(bh, "PostmanRuntime/7.29.2");
+
 			// Ebay ebay_scrapper = new Ebay();
 			// Dx dx_scrapper = new Dx();
 			// BestBuy bestbuy_scrapper = new BestBuy();
@@ -65,7 +70,8 @@ public class DemoApplication {
 			// taskExecutor.execute(amazonScrapper);
 			// taskExecutor.execute(newEggScrapper);
 			// taskExecutor.execute(argosScrapper);
-			taskExecutor.execute(flipkartScrapper);
+			// taskExecutor.execute(flipkartScrapper);
+			taskExecutor.execute(bhScrapper);
 
 			// taskExecutor.execute(dx_scrapper);
 
