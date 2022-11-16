@@ -1,7 +1,5 @@
 package com.example.demo.Scrapper;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -13,14 +11,14 @@ import org.jsoup.select.Elements;
 
 import com.example.demo.Website.Website;
 
-public class Bh extends Thread {
+public class Box extends Thread {
   private Website website;
 
   private String searchPageURL;
   private String userAgent;
   private int pageQty;
 
-  public Bh(Website website, String userAgent) {
+  public Box(Website website, String userAgent) {
     this.website = website;
     this.searchPageURL = website.getUrl() + "/monitors";
     this.pageQty = 2;
@@ -151,44 +149,29 @@ public class Bh extends Thread {
 
   /**
    * 
-   * @return Cannot find Model and Brand separately, Using regex to filter the
-   *         product title.
-   */
-  public String decomposeTitle(String title) {
-    String brandModel = null;
-    try {
-      Pattern regexPattern = Pattern.compile(".+?(?=\\s\\d{2,3})");
-      // Identified a pattern in product title.
-      // Always: [BRAND] [MODEL ?MODEL] [SIZE] ...
-      // Breaks the line when encountering the screen size, 2 or 3 digit, then first
-      // word is brand.
-      Matcher match = regexPattern.matcher(title);
-
-      if (match.find()) {
-        brandModel = match.group(0);
-      }
-
-    } catch (Exception e) {
-      // Not found. Keep it null.
-    }
-
-    return brandModel;
-  }
-
-  /**
-   * 
    * @return Monitor brand.
    */
-  public String getProductBrand(String brandModel) {
-    return brandModel.substring(0, brandModel.indexOf(' '));
+  public String getProductBrand(String title) {
+    String brand = title.substring(0, title.indexOf(' '));
+
+    return brand;
   }
 
   /**
    * 
    * @return Monitor model.
    */
-  public String getProductModel(String brandModel) {
-    return brandModel.substring(brandModel.indexOf(' '), brandModel.length());
+  public String getProductModel(Element productElement) {
+    String model = null;
+
+    try {
+      model = productElement.select("div.p-list-title-wrapper").select("p.p-list-manufacturercode").text();
+
+    } catch (Exception e) {
+      // DO nothing.
+    }
+
+    return model;
   }
 
   /**
@@ -280,8 +263,8 @@ public class Bh extends Thread {
    */
   public Integer requestSleep() {
     Random rn = new Random();
-    int range = 3000 - 1000 + 1;
-    int randomNum = rn.nextInt(range) + 1000;
+    int range = 3000 - 2000 + 1;
+    int randomNum = rn.nextInt(range) + 2000;
     System.out.println(randomNum);
 
     try {
@@ -312,45 +295,33 @@ public class Bh extends Thread {
         Double price = getProductPrice(productElement);
         Integer screenSize = getProductScreenSize(productElement);
         String displayResolution = getProductDisplayResolution(productElement);
-
         Integer refreshRate = getProductRefreshRate(productElement);
-        System.out.println(refreshRate);
 
+        String brand = getProductBrand(title);
+        String model = getProductModel(productElement);
+
+        System.out.println(productLink);
+        System.out.println(String.format("""
+            ----------------\r
+            Image: %s\r
+            Title: %s\r
+            Brand: %s\r
+            Model: %s\r
+            Price: $ %f\r
+            Display size: %d\"\r
+            Resolution: %s\r
+            Refresh Rate: %d Hz\r
+            ----------------\n
+            """, image, title, brand, model, price, screenSize, displayResolution,
+            refreshRate));
+
+        // Product product = new Product(model, true, title, link, brand,
+        // this.website, 0,
+        // "test", image, "test", price);
+
+        // productRepository.save(product);
       }
-
-      // for (String link : productLinks) {
-      // Product Url are relative, adding base.
-      // Document productPage = getPage(website.getUrl() + link);
-      // System.out.println(productPage);
-
-      // String brand = getProductBrand(brandModel);
-      // String model = getProductModel(brandModel);
-
-      // System.out.println(link);
-      // System.out.println(String.format("""
-      // ----------------\r
-      // Image: %s\r
-      // Title: %s\r
-      // Brand: %s\r
-      // Model: %s\r
-      // Price: $ %f\r
-      // Display size: %d\"\r
-      // Resolution: %s\r
-      // Refresh Rate: %d Hz\r
-      // ----------------\n
-      // """, image, title, brand, model, price, screenSize, displayResolution,
-      // refreshRate));
-
-      // Product product = new Product(model, true, title, link, brand,
-      // this.website, 0,
-      // "test", image, "test", price);
-
-      // productRepository.save(product);
-
       requestSleep();
-
-      // break;
-      // }
 
     }
 

@@ -58,7 +58,8 @@ public class DemoApplication {
 			Website bh = new Website("BH",
 					"https://simplr.us/wp-content/uploads/2021/10/B_H_Logo_2021.png",
 					"https://www.box.co.uk");
-			Bh bhScrapper = new Bh(bh, "PostmanRuntime/7.29.2");
+			Bh bhScrapper = new Bh(bh,
+					"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36");
 
 			// Ebay ebay_scrapper = new Ebay();
 			// Dx dx_scrapper = new Dx();
