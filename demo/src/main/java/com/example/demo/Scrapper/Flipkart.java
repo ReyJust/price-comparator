@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -303,9 +304,30 @@ public class Flipkart extends Thread {
     return rate;
   }
 
+  /*
+   * Random Sleep between 1 and 3 seconds.
+   */
+  public Integer requestSleep() {
+    Random rn = new Random();
+    int range = 3000 - 2000 + 1;
+    int randomNum = rn.nextInt(range) + 2000;
+    // System.out.println(randomNum);
+
+    try {
+      Thread.sleep(randomNum);
+    } catch (InterruptedException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+
+    return null;
+  }
+
   @Override
   public void run() {
     System.out.println("[INFO] " + website.getTitle() + " Scrapper Started.\n[INFO] Fetching " + pageQty + " pages.");
+
+    int total_products = 0;
 
     for (int pageNo = 1; pageNo <= pageQty; pageNo++) {
 
@@ -334,9 +356,10 @@ public class Flipkart extends Thread {
         Elements displaySpecTable = getSpecificationTable(productPage);
         Integer refreshRate = getProductRefreshRate(displaySpecTable);
 
-        System.out.println(website.getUrl() + link);
+        // System.out.println(website.getUrl() + link);
         System.out.println(String.format("""
-            ----------------\r
+            [%s]------\r
+            Link: %s\r
             Image: %s\r
             Title: %s\r
             Brand: %s\r
@@ -345,24 +368,28 @@ public class Flipkart extends Thread {
             Display size: %d\"\r
             Resolution: %s\r
             Refresh Rate: %d Hz\r
-            ----------------\n
-            """, image, title, brand, model, price, screenSize, displayResolution,
+            ----------------
+            """, website.getTitle(), website.getUrl() + link, image, title, brand, model, price, screenSize,
+            displayResolution,
             refreshRate));
 
-        // Product product = new Product(model, true, title, link, brand,
-        // this.website, 0,
-        // "test", image, "test", price);
+        // We keep product which have brand, model and price
+        if (brand != null && model != null && price != null) {
+          // Product product = new Product(model, true, title, this.website.getUrl() +
+          // link, brand, this.website, 0,
+          // "test", image, "test", price);
 
-        // productRepository.save(product);
-        try {
-          Thread.sleep(1000);
-        } catch (InterruptedException e) {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
+          // productRepository.save(product);
+          total_products += 1;
+
         }
-      }
 
+        requestSleep();
+      }
+      requestSleep();
     }
+
+    System.out.println("[" + website.getTitle() + "] FINISHED SCRAPPING: Save " + total_products + " valid products.");
 
   }
 }

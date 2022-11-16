@@ -2,6 +2,7 @@ package com.example.demo.Scrapper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -111,7 +112,14 @@ public class NewEgg extends Thread {
    * @return Monitor image.
    */
   public String getProductImage(Document productPage) {
-    return productPage.getElementsByClass("product-view-img-original").first().attr("src");
+    String image = null;
+
+    try {
+      image = productPage.getElementsByClass("product-view-img-original").first().attr("src");
+    } catch (Exception e) {
+      // TODO: handle exception
+    }
+    return image;
   }
 
   /**
@@ -119,7 +127,15 @@ public class NewEgg extends Thread {
    * @return Monitor title.
    */
   public String getProductTitle(Document productPage) {
-    return productPage.select("h1.product-title").first().text();
+    String title = null;
+    try {
+      title = productPage.select("h1.product-title").first().text();
+
+    } catch (Exception e) {
+      // TODO: handle exception
+    }
+
+    return title;
   }
 
   /**
@@ -236,9 +252,29 @@ public class NewEgg extends Thread {
     return rate;
   }
 
+  /*
+   * Random Sleep between 1 and 3 seconds.
+   */
+  public Integer requestSleep() {
+    Random rn = new Random();
+    int range = 3000 - 2000 + 1;
+    int randomNum = rn.nextInt(range) + 2000;
+    // System.out.println(randomNum);
+
+    try {
+      Thread.sleep(randomNum);
+    } catch (InterruptedException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+
+    return null;
+  }
+
   @Override
   public void run() {
     System.out.println("[INFO] " + website.getTitle() + " Scrapper Started.\n[INFO] Fetching " + pageQty + " pages.");
+    int total_products = 0;
 
     for (int pageNo = 1; pageNo <= pageQty; pageNo++) {
 
@@ -250,23 +286,35 @@ public class NewEgg extends Thread {
 
         Element productDetails = productPage.getElementById("product-details");
 
-        Element productModelTable = productDetails.lastElementChild().child(1).select("caption:contains(Model)")
-            .first().parent();
-        Element productDisplayTable = productDetails.lastElementChild().child(1).select("caption:contains(Display)")
-            .first().parent();
+        String brand = null;
+        String model = null;
+        Integer screenSize = null;
+        String displayResolution = null;
+        Integer refreshRate = null;
+        try {
+          Element productModelTable = productDetails.lastElementChild().child(1).select("caption:contains(Model)")
+              .first().parent();
+          Element productDisplayTable = productDetails.lastElementChild().child(1).select("caption:contains(Display)")
+              .first().parent();
+
+          brand = getProductBrand(productModelTable);
+          model = getProductModel(productModelTable, brand);
+          screenSize = getProductScreenSize(productDisplayTable);
+          displayResolution = getProductDisplayResolution(productDisplayTable);
+          refreshRate = getProductRefreshRate(productDisplayTable);
+
+        } catch (Exception e) {
+          // TODO: handle exception
+        }
 
         String image = getProductImage(productPage);
         String title = getProductTitle(productPage);
-        String brand = getProductBrand(productModelTable);
-        String model = getProductModel(productModelTable, brand);
         Double price = getProductPrice(productPage);
-        Integer screenSize = getProductScreenSize(productDisplayTable);
-        String displayResolution = getProductDisplayResolution(productDisplayTable);
-        Integer refreshRate = getProductRefreshRate(productDisplayTable);
 
         // System.out.println(link);
         System.out.println(String.format("""
-            ----------------\r
+            [%s]------\r
+            Link: %s\r
             Image: %s\r
             Title: %s\r
             Brand: %s\r
@@ -276,24 +324,26 @@ public class NewEgg extends Thread {
             Resolution: %s\r
             Refresh Rate: %d Hz\r
             ----------------\n
-            """, image, title, brand, model, price, screenSize, displayResolution,
+            """, website.getTitle(), link, image, title, brand, model, price, screenSize, displayResolution,
             refreshRate));
 
-        // Product product = new Product(model, true, title, link, brand,
-        // this.website, 0,
-        // "test", image, "test", price);
+        // We keep product which have brand, model and price
+        if (brand != null && model != null && price != null) {
+          // Product product = new Product(model, true, title, this.website.getUrl() +
+          // link, brand, this.website, 0,
+          // "test", image, "test", price);
 
-        // productRepository.save(product);
-        try {
-          Thread.sleep(1000);
-        } catch (InterruptedException e) {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
+          // productRepository.save(product);
+          total_products += 1;
+
         }
+
+        requestSleep();
       }
       ;
-
+      requestSleep();
     }
+    System.out.println("[" + website.getTitle() + "] FINISHED SCRAPPING: Save " + total_products + " valid products.");
 
   }
 }

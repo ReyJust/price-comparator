@@ -2,6 +2,7 @@ package com.example.demo.Scrapper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -23,7 +24,7 @@ public class Amazon extends Thread {
   private int pageQty;
 
   // @Autowired
-  private ProductRepository productRepository;
+  // private ProductRepository productRepository;
 
   public Amazon(Website website, String userAgent) {
     this.website = website;
@@ -103,7 +104,7 @@ public class Amazon extends Thread {
       }
 
     }
-    System.out.println("[" + website + "][PAGE" + pageNo + "] Gathered " + productLinks.size() + " links.");
+    System.out.println("[" + website.getTitle() + "][PAGE" + pageNo + "] Gathered " + productLinks.size() + " links.");
 
     return productLinks;
   }
@@ -137,21 +138,19 @@ public class Amazon extends Thread {
    * @return Monitor model.
    */
   public String getProductModel(Element productDetails) {
-
-    Element detail_section = productDetails.getElementById("prodDetails");
-    Element detail_table = detail_section.getElementById("productDetails_detailBullets_sections1");
-
     String model = "";
 
-    if (detail_table != null) {
-      Elements details = detail_table.firstElementChild().children();
+    try {
+      Element detail_section = productDetails.getElementById("prodDetails");
+      Element detail_table = detail_section.getElementById("productDetails_techSpec_section_2");
 
-      for (Element detail : details) {
-        if (detail.select("th").text().contains("Item model number")) {
-          model = detail.select("td").text();
-          break;
-        }
+      if (detail_table == null) {
+        detail_table = detail_section.getElementById("productDetails_detailBullets_sections1");
       }
+
+      model = detail_table.select("th:contains(Item model number) + td").text();
+    } catch (Exception e) {
+      // Not found. Keep it null.
     }
 
     return model;
@@ -226,10 +225,30 @@ public class Amazon extends Thread {
     return rate;
   }
 
+  /*
+   * Random Sleep between 1 and 3 seconds.
+   */
+  public Integer requestSleep() {
+    Random rn = new Random();
+    int range = 3000 - 2000 + 1;
+    int randomNum = rn.nextInt(range) + 2000;
+    // System.out.println(randomNum);
+
+    try {
+      Thread.sleep(randomNum);
+    } catch (InterruptedException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+
+    return null;
+  }
+
   @Override
   public void run() {
     System.out
         .println("[INFO] " + this.website.getTitle() + " Scrapper Started.\n[INFO] Fetching " + pageQty + " pages.");
+    int total_products = 0;
 
     for (int pageNo = 1; pageNo <= pageQty; pageNo++) {
 
@@ -251,34 +270,38 @@ public class Amazon extends Thread {
 
         // System.out.println(this.website.getUrl() + link);
         System.out.println(String.format("""
-            ----------------\r
-              Image: %s\r
-              Title: %s\r
-              Brand: %s\r
-              Model: %s\r
-              Price: $ %f\r
-              Display size: %d\"\r
-              Resolution: %s\r
-              Refresh Rate: %d Hz\r
-              ----------------\n
-              """, image, title, brand, model, price, screenSize, displayResolution,
+            [%s]------\r
+            Link: %s\r
+            Image: %s\r
+            Title: %s\r
+            Brand: %s\r
+            Model: %s\r
+            Price: $ %f\r
+            Display size: %d\"\r
+            Resolution: %s\r
+            Refresh Rate: %d Hz\r
+            ----------------
+            """, website.getTitle(), website.getUrl() + link, image, title, brand, model, price, screenSize,
+            displayResolution,
             refreshRate));
 
-        Product product = new Product(model, true, title, this.website.getUrl() + link, brand, this.website, 0,
-            "test", image, "test", price);
+        // We keep product which have brand, model and price
+        if (brand != null && model != null && price != null) {
+          // Product product = new Product(model, true, title, this.website.getUrl() +
+          // link, brand, this.website, 0,
+          // "test", image, "test", price);
 
-        // productRepository.save(product);
+          // productRepository.save(product);
+          total_products += 1;
 
-        try {
-          Thread.sleep(1000);
-        } catch (InterruptedException e) {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
         }
+
+        requestSleep();
       }
       ;
-
+      requestSleep();
     }
+    System.out.println("[" + website.getTitle() + "] FINISHED SCRAPPING: Save " + total_products + " valid products.");
 
   }
 }

@@ -2,6 +2,7 @@ package com.example.demo.Scrapper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -167,7 +168,14 @@ public class Argos extends Thread {
    * @return Monitor brand.
    */
   public String getProductBrand(String brandModel) {
-    return brandModel.substring(0, brandModel.indexOf(' '));
+    String brand = null;
+    try {
+      brand = brandModel.substring(0, brandModel.indexOf(' '));
+    } catch (Exception e) {
+      // TODO: handle exception
+    }
+
+    return brand;
   }
 
   /**
@@ -175,7 +183,13 @@ public class Argos extends Thread {
    * @return Monitor model.
    */
   public String getProductModel(String brandModel) {
-    return brandModel.substring(brandModel.indexOf(' '), brandModel.length());
+    String model = null;
+    try {
+      model = brandModel.substring(brandModel.indexOf(' '), brandModel.length());
+    } catch (Exception e) {
+      // TODO: handle exception
+    }
+    return model;
   }
 
   /**
@@ -246,7 +260,6 @@ public class Argos extends Thread {
     try {
       String rateRow = productPage.select("div.product-description-content-text > ul > li:contains(refresh rate)")
           .text();
-      System.out.println(rateRow);
 
       // Split str to get the 00Hz pattern excluding Hz.
       Pattern regexPattern = Pattern.compile("(\\b\\d{2,3})Hz\\b");
@@ -261,9 +274,29 @@ public class Argos extends Thread {
     return rate;
   }
 
+  /*
+   * Random Sleep between 1 and 3 seconds.
+   */
+  public Integer requestSleep() {
+    Random rn = new Random();
+    int range = 3000 - 2000 + 1;
+    int randomNum = rn.nextInt(range) + 2000;
+    // System.out.println(randomNum);
+
+    try {
+      Thread.sleep(randomNum);
+    } catch (InterruptedException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+
+    return null;
+  }
+
   @Override
   public void run() {
     System.out.println("[INFO] " + website.getTitle() + " Scrapper Started.\n[INFO] Fetching " + pageQty + " pages.");
+    int total_products = 0;
 
     for (int pageNo = 1; pageNo <= pageQty; pageNo++) {
 
@@ -288,7 +321,8 @@ public class Argos extends Thread {
 
         // System.out.println(link);
         System.out.println(String.format("""
-            ----------------\r
+            [%s]------\r
+            Link: %s\r
             Image: %s\r
             Title: %s\r
             Brand: %s\r
@@ -297,24 +331,28 @@ public class Argos extends Thread {
             Display size: %d\"\r
             Resolution: %s\r
             Refresh Rate: %d Hz\r
-            ----------------\n
-            """, image, title, brand, model, price, screenSize, displayResolution,
+            ----------------
+            """, website.getTitle(), website.getUrl() + link, image, title, brand, model, price, screenSize,
+            displayResolution,
             refreshRate));
 
-        // Product product = new Product(model, true, title, link, brand,
-        // this.website, 0,
-        // "test", image, "test", price);
+        // We keep product which have brand, model and price
+        if (brand != null && model != null && price != null) {
+          // Product product = new Product(model, true, title, this.website.getUrl() +
+          // link, brand, this.website, 0,
+          // "test", image, "test", price);
 
-        // productRepository.save(product);
+          // productRepository.save(product);
+          total_products += 1;
 
-        try {
-          Thread.sleep(1000);
-        } catch (InterruptedException e) {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
         }
+
+        requestSleep();
       }
+      requestSleep();
     }
+
+    System.out.println("[" + website.getTitle() + "] FINISHED SCRAPPING: Save " + total_products + " valid products.");
 
   }
 }

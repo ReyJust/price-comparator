@@ -265,7 +265,7 @@ public class Box extends Thread {
     Random rn = new Random();
     int range = 3000 - 2000 + 1;
     int randomNum = rn.nextInt(range) + 2000;
-    System.out.println(randomNum);
+    // System.out.println(randomNum);
 
     try {
       Thread.sleep(randomNum);
@@ -280,6 +280,8 @@ public class Box extends Thread {
   @Override
   public void run() {
     System.out.println("[INFO] " + website.getTitle() + " Scrapper Started.\n[INFO] Fetching " + pageQty + " pages.");
+
+    int total_products = 0;
 
     for (int pageNo = 1; pageNo <= pageQty; pageNo++) {
 
@@ -300,9 +302,10 @@ public class Box extends Thread {
         String brand = getProductBrand(title);
         String model = getProductModel(productElement);
 
-        System.out.println(productLink);
+        // System.out.println(productLink);
         System.out.println(String.format("""
-            ----------------\r
+            [%s]------\r
+            Link: %s\r
             Image: %s\r
             Title: %s\r
             Brand: %s\r
@@ -311,13 +314,20 @@ public class Box extends Thread {
             Display size: %d\"\r
             Resolution: %s\r
             Refresh Rate: %d Hz\r
-            ----------------\n
-            """, image, title, brand, model, price, screenSize, displayResolution,
+            ----------------
+            """, website.getTitle(), productLink, image, title, brand, model, price, screenSize, displayResolution,
             refreshRate));
 
-        // Product product = new Product(model, true, title, link, brand,
-        // this.website, 0,
-        // "test", image, "test", price);
+        // We keep product which have brand, model and price
+        if (brand != null && model != null && price != null) {
+          // Product product = new Product(model, true, title, this.website.getUrl() +
+          // link, brand, this.website, 0,
+          // "test", image, "test", price);
+
+          // productRepository.save(product);
+          total_products += 1;
+
+        }
 
         // productRepository.save(product);
       }
@@ -325,5 +335,6 @@ public class Box extends Thread {
 
     }
 
+    System.out.println("[" + website.getTitle() + "] FINISHED SCRAPPING: Save " + total_products + " valid products.");
   }
 }

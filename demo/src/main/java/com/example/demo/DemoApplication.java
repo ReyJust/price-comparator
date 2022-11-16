@@ -14,7 +14,7 @@ import com.example.demo.ProductDetails.ProductDetails;
 import com.example.demo.ProductDetails.ProductDetailsRepository;
 import com.example.demo.Website.Website;
 import com.example.demo.Website.WebsiteRepository;
-import com.example.demo.Scrapper.Bh;
+import com.example.demo.Scrapper.Box;
 import com.example.demo.Scrapper.Amazon;
 import com.example.demo.Scrapper.NewEgg;
 import com.example.demo.Scrapper.Argos;
@@ -55,26 +55,20 @@ public class DemoApplication {
 					"https://www.flipkart.com");
 			Flipkart flipkartScrapper = new Flipkart(flipkart, userAgent);
 
-			Website bh = new Website("BH",
-					"https://simplr.us/wp-content/uploads/2021/10/B_H_Logo_2021.png",
+			Website bh = new Website("The Box",
+					"https://www.box.co.uk/Images/box-logo2-FP_2110111013.svg",
 					"https://www.box.co.uk");
-			Bh bhScrapper = new Bh(bh,
+			Box boxScrapper = new Box(bh,
 					"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36");
-
-			// Ebay ebay_scrapper = new Ebay();
-			// Dx dx_scrapper = new Dx();
-			// BestBuy bestbuy_scrapper = new BestBuy();
 
 			ApplicationContext context = new AnnotationConfigApplicationContext(AsyncConfig.class);
 			ThreadPoolTaskExecutor taskExecutor = context.getBean(ThreadPoolTaskExecutor.class);
 
-			// taskExecutor.execute(amazonScrapper);
-			// taskExecutor.execute(newEggScrapper);
-			// taskExecutor.execute(argosScrapper);
-			// taskExecutor.execute(flipkartScrapper);
-			taskExecutor.execute(bhScrapper);
-
-			// taskExecutor.execute(dx_scrapper);
+			taskExecutor.execute(amazonScrapper);
+			taskExecutor.execute(newEggScrapper);
+			taskExecutor.execute(argosScrapper);
+			taskExecutor.execute(flipkartScrapper);
+			taskExecutor.execute(boxScrapper);
 
 			taskExecutor.shutdown();
 
