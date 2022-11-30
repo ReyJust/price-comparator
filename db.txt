@@ -1,0 +1,1 @@
+GRANT ALL PRIVILEGES ON DATABASE price_comparatorr TO mdx_user;
