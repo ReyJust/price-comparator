@@ -26,6 +26,8 @@
 </template>
 
 <script>
+import axios from "axios";
+
 export default {
   name: "Shop",
   data() {
@@ -118,7 +120,21 @@ export default {
       ],
     };
   },
+  async created() {
+    await this.getProductList();
+  },
+  // async () => {
+  // },
   methods: {
+    async getProductList() {
+      let res = await axios.get(`http://localhost:3000/browse/product-list`, {
+        params: {
+          start: 0,
+          end: 10,
+        },
+      });
+      console.log(res);
+    },
     handleSelectProduct(product_id) {
       console.log(product_id);
       this.$router.push("/product/" + product_id);
