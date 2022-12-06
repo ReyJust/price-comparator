@@ -31,10 +31,10 @@ router.get("/product-list", (req, res, next) => {
                                   ORDER BY id) AS pagination_no,
                                   *
         FROM
-          (SELECT distinct(model),
-                  title,
-                  id,
-                  image_url
+          (SELECT DISTINCT ON (model) model,
+                              title,
+                              id,
+                              image_url
             FROM product p
             WHERE model != '' ) AS sub) AS sbb
       WHERE pagination_no BETWEEN $1 AND $2;

@@ -13,8 +13,8 @@ const db = require("../../db/index");
  */
 router.get("/", function (req, res) {
   try {
-    let body = req.body;
-    console.log("REQ->" + req);
+    let query = req.query;
+    console.log(query.id);
 
     db.query(
       `SELECT *
@@ -23,7 +23,7 @@ router.get("/", function (req, res) {
       AND model = $1
       LIMIT 1;
       `,
-      [body.id],
+      [query.id],
       (err, result) => {
         if (err) {
           return next(err);
