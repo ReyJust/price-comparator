@@ -8,17 +8,33 @@
             shadow="hover"
             style="margin-top: 10px; margin-bottom: 10px"
             :body-style="{ padding: '0px' }"
-            @click="handleSelectProduct(product.id)"
+            @click="handleSelectProduct(encodeURIComponent(product.model))"
           >
-            <img :src="product.img" class="image" />
+            <img :src="product.image_url" class="image" />
             <div style="padding: 20px">
               <span>{{ product.title }}</span>
-              <div class="bottom">
+              <!-- <div class="bottom">
                 <span>As From RS {{ product.price }}</span>
-              </div>
+              </div> -->
             </div>
           </el-card>
         </el-col>
+      </el-row>
+      <el-row justify="center">
+        <el-button>Previous Page</el-button>
+        <el-dropdown
+          ><el-button size="small">
+            Dropdown List<el-icon><arrow-down /></el-icon>
+          </el-button>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item>10</el-dropdown-item>
+              <el-dropdown-item>20</el-dropdown-item>
+              <el-dropdown-item>50</el-dropdown-item>
+            </el-dropdown-menu>
+          </template></el-dropdown
+        >
+        <el-button @click="handleNextPage()">Next Page</el-button>
       </el-row>
     </el-col>
     <el-col :span="3">Pub</el-col>
@@ -32,92 +48,10 @@ export default {
   name: "Shop",
   data() {
     return {
-      products: [
-        {
-          id: "p_1",
-          img: "https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png",
-          title: "Product Title",
-          price: "000.00",
-        },
-        {
-          id: "p_2",
-          img: "https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png",
-          title: "Product Title",
-          price: "000.00",
-        },
-        {
-          id: "p_3",
-          img: "https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png",
-          title: "Product Title",
-          price: "000.00",
-        },
-        {
-          id: "p_4",
-          img: "https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png",
-          title: "Product Title",
-          price: "000.00",
-        },
-        {
-          id: "p_2",
-          img: "https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png",
-          title: "Product Title",
-          price: "000.00",
-        },
-        {
-          id: "p_2",
-          img: "https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png",
-          title: "Product Title",
-          price: "000.00",
-        },
-        {
-          id: "p_2",
-          img: "https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png",
-          title: "Product Title",
-          price: "000.00",
-        },
-        {
-          id: "p_2",
-          img: "https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png",
-          title: "Product Title",
-          price: "000.00",
-        },
-        {
-          id: "p_2",
-          img: "https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png",
-          title: "Product Title",
-          price: "000.00",
-        },
-        {
-          id: "p_2",
-          img: "https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png",
-          title: "Product Title",
-          price: "000.00",
-        },
-        {
-          id: "p_2",
-          img: "https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png",
-          title: "Product Title",
-          price: "000.00",
-        },
-        {
-          id: "p_2",
-          img: "https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png",
-          title: "Product Title",
-          price: "000.00",
-        },
-        {
-          id: "p_2",
-          img: "https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png",
-          title: "Product Title",
-          price: "000.00",
-        },
-        {
-          id: "p_2",
-          img: "https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png",
-          title: "Product Title",
-          price: "000.00",
-        },
-      ],
+      products: [],
+
+      currentPaginationNo: 0,
+      pageSize: 10,
     };
   },
   async created() {
@@ -127,17 +61,22 @@ export default {
   // },
   methods: {
     async getProductList() {
+      this.currentPaginationNo += 1;
       let res = await axios.get(`http://localhost:3000/browse/product-list`, {
         params: {
-          start: 0,
-          end: 10,
+          start: this.currentPaginationNo,
+          end: this.currentPaginationNo + this.pageSize,
         },
       });
-      console.log(res);
+      this.products = res.data.message;
+
+      this.currentPaginationNo += this.products.length;
     },
     handleSelectProduct(product_id) {
-      console.log(product_id);
       this.$router.push("/product/" + product_id);
+    },
+    async handleNextPage() {
+      await this.getProductList();
     },
   },
 };

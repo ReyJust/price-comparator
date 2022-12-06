@@ -21,6 +21,19 @@ const input = ref("");
   </el-row>
 </template>
 
+<script>
+export default {
+  async searchProduct() {
+    let res = await axios.get(`http://localhost:3000/search/`, {
+      params: {
+        model: "",
+      },
+    });
+    console.log(res);
+  },
+};
+</script>
+
 <style scoped>
 .search-box {
   /* min-height: 50px; */
