@@ -8,7 +8,9 @@ import Footer from "./components/Footer.vue";
     <el-header>
       <NavBar />
     </el-header>
-    <RouterView />
+    <el-main>
+      <RouterView />
+    </el-main>
     <Footer />
   </div>
 </template>
@@ -19,7 +21,7 @@ import Footer from "./components/Footer.vue";
 }
 
 .main {
-  margin: 0;
+  margin: 2vh !important;
   padding: 0;
   min-height: 85vh;
 }

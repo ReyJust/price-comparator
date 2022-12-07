@@ -1,16 +1,43 @@
 <template>
-  <el-card class="box-card">
-    <template #header>
-      <div class="card-header">
-        <span>Product Name name</span>
-        <el-button class="button" text>Operation button</el-button>
+  <el-col :span="22">
+    <el-card class="box-card">
+      <div style="display: flex">
+        <div>
+          <el-image
+            style="width: 300px; margin: 12px"
+            :src="productInfo.image_url"
+            fit="fill"
+          />
+        </div>
+        <div>
+          <h3 id="description">{{ productInfo.title }}</h3>
+          <el-descriptions
+            title="Specifications"
+            direction="horizontal"
+            :column="1"
+            size="default"
+            border
+          >
+            <el-descriptions-item label="Model">{{
+              productInfo.model
+            }}</el-descriptions-item>
+            <el-descriptions-item label="Brand">{{
+              productInfo.brand
+            }}</el-descriptions-item>
+            <el-descriptions-item label="Display Resolution"
+              >{{ productInfo.display_resolution_px }}
+            </el-descriptions-item>
+            <el-descriptions-item label="Refresh Rate">{{
+              productInfo.refresh_rate_hz
+            }}</el-descriptions-item>
+            <el-descriptions-item label="Screen Size">
+              {{ productInfo.screen_size_inch }}
+            </el-descriptions-item>
+          </el-descriptions>
+        </div>
       </div>
-    </template>
-    <div>
-      <p>Image</p>
-      <p>Description</p>
-    </div>
-  </el-card>
+    </el-card>
+  </el-col>
 </template>
 
 <script>
@@ -34,11 +61,16 @@ export default {
           id: this.$route.params.id,
         },
       });
-      console.log(res);
-      this.products = res.data.message;
+
+      this.productInfo = res.data.message;
     },
   },
 };
 </script>
 
-<style></style>
+<style>
+#description {
+  text-transform: uppercase;
+  text-align: left;
+}
+</style>
