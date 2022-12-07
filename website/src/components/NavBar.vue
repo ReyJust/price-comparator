@@ -24,13 +24,13 @@
     <div>
       <el-input
         style="width: 75vh; margin-top: 1vh"
-        v-model="input"
+        v-model="searchString"
         placeholder="Product Title"
         :prefix-icon="Search"
         clearable
         size="large"
+        @keyup.enter="handleSearch"
       >
-        <!-- <template #append> <el-button :icon="Search" /> </template> -->
       </el-input>
     </div>
   </el-menu>
@@ -44,20 +44,25 @@ const activeIndex = ref("/");
 const handleSelect = (key, keyPath) => {
   // console.log(key, keyPath);
 };
-const input = ref("");
 </script>
 
 <script>
 export default {
   name: "NavBar",
   data() {
-    return {};
+    return {
+      searchString: "",
+    };
   },
   methods: {
     goHome() {
       this.activeIndex = "/";
       console.log(this.activeIndex);
       this.$router.push({ name: "home" });
+    },
+    handleSearch() {
+      this.activeIndex = "/browse";
+      this.$router.push({ name: "Browse", query: { s: this.searchString } });
     },
   },
   beforeCreate() {
