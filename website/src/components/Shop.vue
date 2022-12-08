@@ -35,22 +35,30 @@
     </el-col>
     <el-col>
       <el-row justify="center">
-        <el-button>&lt;&lt;</el-button>
-        <el-dropdown
-          ><el-button>
-            {{ pageSize }}<el-icon><arrow-down /></el-icon>
-          </el-button>
-          <template #dropdown>
-            <el-dropdown-menu>
-              <el-dropdown-item>10</el-dropdown-item>
-              <el-dropdown-item>20</el-dropdown-item>
-              <el-dropdown-item>30</el-dropdown-item>
-            </el-dropdown-menu>
-          </template></el-dropdown
+        <el-col :span="2">
+          <el-button @click="handlePaging('prev')" :disabled="isFirstPage"
+            ><el-icon><DArrowLeft /></el-icon
+          ></el-button>
+        </el-col>
+        <el-col :span="2">
+          <el-dropdown @command="changePageSize"
+            ><el-button>
+              {{ pageSize }}<el-icon><arrow-down /></el-icon>
+            </el-button>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item command="10">10</el-dropdown-item>
+                <el-dropdown-item command="20">20</el-dropdown-item>
+                <el-dropdown-item command="30">30</el-dropdown-item>
+              </el-dropdown-menu>
+            </template></el-dropdown
+          ></el-col
         >
-        <el-button @click="handleNextPage()">&gt;&gt;</el-button>
-      </el-row></el-col
-    >
+        <el-col :span="2">
+          <el-button @click="handlePaging('next')"
+            ><el-icon><DArrowRight /></el-icon
+          ></el-button> </el-col></el-row
+    ></el-col>
   </el-row>
 </template>
 
@@ -63,33 +71,62 @@ export default {
     return {
       products: [],
 
-      currentPaginationNo: 0,
+      currentPaginationNo: 1,
       pageSize: 10,
     };
   },
   async created() {
-    await this.getProductList();
+    await this.getProductList(
+      this.currentPaginationNo,
+      this.currentPaginationNo + this.pageSize
+    );
+
+    this.currentPaginationNo += this.products.length;
   },
-  // async () => {
-  // },
   methods: {
     async getProductList() {
-      // this.currentPaginationNo += 1;
+      let end = this.currentPaginationNo + this.pageSize;
+
       let res = await axios.get(`http://localhost:3000/browse/product-list`, {
         params: {
           start: this.currentPaginationNo,
-          end: this.currentPaginationNo + this.pageSize,
+          end: end,
         },
       });
       this.products = res.data.message;
-
-      this.currentPaginationNo += this.products.length;
     },
     handleSelectProduct(product_id) {
       this.$router.push("/product/" + product_id);
     },
-    async handleNextPage() {
+    async handlePaging(way) {
+      if (way == "next") {
+        this.currentPaginationNo = this.currentPaginationNo + this.pageSize;
+        await this.getProductList();
+      } else if (way == "prev") {
+        this.currentPaginationNo = this.currentPaginationNo - this.pageSize;
+
+        if (this.currentPaginationNo < 0) {
+          this.currentPaginationNo = 0;
+        }
+        await this.getProductList();
+      }
+
+      console.log(this.currentPaginationNo);
+      this.$router.push({
+        path: "browse",
+        query: { start: this.currentPaginationNo },
+      });
+    },
+
+    async changePageSize(command) {
+      this.pageSize = parseInt(command);
+
       await this.getProductList();
+    },
+  },
+  computed: {
+    isFirstPage() {
+      return this.currentPaginationNo <= this.pageSize + 1;
     },
   },
 };

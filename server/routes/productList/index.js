@@ -37,7 +37,7 @@ router.get("/product-list", (req, res, next) => {
                               image_url
             FROM product p
             WHERE model != '' ) AS sub) AS sbb
-      WHERE pagination_no BETWEEN $1 AND $2;
+      WHERE pagination_no >= $1 AND pagination_no < $2;
       `,
       [query.start, query.end],
       (err, result) => {

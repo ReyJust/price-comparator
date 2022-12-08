@@ -1,24 +1,25 @@
 <template>
   <el-col :span="22">
     <el-card class="box-card">
-      <el-table :data="prices" style="width: 100%">
-        <el-table-column label="" width="100">
+      <el-table :data="prices" style="width: 100%" striped>
+        <el-table-column label="" width="250" align="center">
           <template #default="scope">
             <el-image style="height: 50px" :src="scope.row.website_image_url">
             </el-image>
           </template>
         </el-table-column>
-        <el-table-column prop="title" label="Title" />
-        <el-table-column label="Offers" width="300">
+        <el-table-column label="Merchant">
           <template #default="scope">
             <div style="display: flex; align-items: center">
               <span
-                ><a :href="scope.row.url" target="_blank">Link To Page</a></span
+                ><a :href="scope.row.url" target="_blank">{{
+                  scope.row.title
+                }}</a></span
               >
             </div>
           </template>
         </el-table-column>
-        <el-table-column prop="price" label="Price" width="100" />
+        <el-table-column prop="price" label="Price" width="200" />
       </el-table>
     </el-card>
   </el-col>
