@@ -3,7 +3,7 @@ import Search from "../components/Search.vue";
 </script>
 
 <template>
-  <el-main class="main">
+  <el-main class="main"></el-main>
     <main class="home">
       <div>
         <el-row>

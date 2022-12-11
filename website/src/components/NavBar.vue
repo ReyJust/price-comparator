@@ -57,8 +57,7 @@ export default {
   methods: {
     goHome() {
       this.activeIndex = "/";
-      console.log(this.activeIndex);
-      this.$router.push({ name: "home" });
+      this.$router.push({ name: "Home" });
     },
   },
   beforeCreate() {

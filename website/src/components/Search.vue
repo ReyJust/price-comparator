@@ -1,8 +1,5 @@
 <script setup>
-import { Search } from "@element-plus/icons-vue";
-
-import { ref } from "vue";
-const input = ref("");
+import { Right } from "@element-plus/icons-vue";
 </script>
 
 <template>
@@ -10,28 +7,28 @@ const input = ref("");
     <el-col :span="22" :offset="2">
       <el-card class="box-card search-box">
         <div class="search-bar">
-          <p style="text-align: left; color: gray; margin-bottom: 5px">
+          <p style="text-align: center; color: gray; margin-bottom: 5px">
             Find the best price for your product
           </p>
-          <el-input v-model="input" placeholder="Product Title" clearable>
+          <el-divider />
+          <el-button plain type="primary" @click="goToBrowse">
+            Start Now<el-icon class="el-icon--right"><Right /></el-icon>
+          </el-button>
+          <!-- <el-input v-model="input" placeholder="Product Title" clearable>
             <template #append> <el-button :icon="Search" /> </template
-          ></el-input>
-        </div> </el-card
-    ></el-col>
+          ></el-input> -->
+        </div>
+      </el-card></el-col
+    >
   </el-row>
 </template>
 
 <script>
 export default {
-  async searchProduct() {
-    let res = await axios.get(`http://localhost:3000/browse/search/`, {
-      params: {
-        start: 0,
-        end: 10,
-        searchString: input,
-      },
-    });
-    console.log(res);
+  methods: {
+    goToBrowse() {
+      this.$router.push({ name: "Browse" });
+    },
   },
 };
 </script>

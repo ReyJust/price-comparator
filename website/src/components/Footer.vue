@@ -1,10 +1,13 @@
 <template>
-  <el-footer height="2vh" class="footer">
-    <el-row align="middle" justify="center" :gutter="20">
+  <el-footer class="footer">
+    <el-row align="middle" justify="center">
       <el-col
-        ><span style="margin: 0">
-          Made by Justin Mayer, Advanced Web Development & Big Data
-        </span></el-col
+        ><el-divider />
+        <p>
+          Made with ❤️ by Justin Mayer,CST3130 Advanced Web Development & Big
+          Data,<br />
+          Middlesex University Mauritius
+        </p></el-col
       ></el-row
     >
   </el-footer>
@@ -20,7 +23,6 @@ export default {
 .footer {
   /* background-color: var(--el-color-primary);
   */
-  background-color: #ffffff;
-  margin: 10px;
+  /* background-color: var(--el-color-info-light-5); */
 }
 </style>

@@ -102,7 +102,6 @@ export default {
       // if (this.$route.query.s) {
       //   this.searchString = this.$route.query.s;
       // }
-      console.log(this.searchString);
 
       let res = await axios.get(`http://localhost:3000/browse/product-list`, {
         params: {
