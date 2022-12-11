@@ -1,15 +1,15 @@
 <script setup>
-import Search from "../components/Search.vue";
+import HomeComponent from "../components/HomeComponent.vue";
 </script>
 
 <template>
-  <el-main class="main"></el-main>
+  <el-main class="main">
     <main class="home">
       <div>
         <el-row>
           <el-col :span="12"
             ><div class="grid-content" />
-            <Search />
+            <HomeComponent />
           </el-col>
         </el-row>
       </div>

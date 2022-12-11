@@ -4,13 +4,13 @@
       ><h1>
         All your products from the web... <br />With the best prices
       </h1></el-col
-    ></el-row
-  >
-  <Shop />
+    >
+    <ProductList
+  /></el-row>
 </template>
 
 <script setup>
-import Shop from "../components/Shop.vue";
+import ProductList from "../components/ProductList.vue";
 </script>
 
 <style scoped>

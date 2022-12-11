@@ -26,12 +26,7 @@ export default {
   },
   methods: {
     handleSearch() {
-      console.log(this.searchString);
-
       this.$emit("updateSearchString", this.searchString);
-      // this.activeIndex = "/browse";
-
-      // this.$router.push({ name: "Browse", query: { s: this.searchString } });
     },
   },
 };

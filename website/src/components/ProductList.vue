@@ -77,7 +77,7 @@ import axios from "axios";
 import { Search } from "@element-plus/icons-vue";
 
 export default {
-  name: "Shop",
+  name: "ProductList",
   data() {
     return {
       products: [],
