@@ -21,10 +21,11 @@
       </el-menu-item>
     </template>
     <div class="flex-grow" />
-    <div>
+    <!-- <div>
       <el-input
         style="width: 75vh; margin-top: 1vh"
         v-model="searchString"
+        v-if="displaySearch"
         placeholder="Product Title"
         :prefix-icon="Search"
         clearable
@@ -32,14 +33,15 @@
         @keyup.enter="handleSearch"
       >
       </el-input>
-    </div>
+    </div> -->
   </el-menu>
 </template>
 
 <script setup>
 import { ref } from "vue";
 
-import { Search } from "@element-plus/icons-vue";
+import SearchComponent from "./SearchComponent.vue";
+
 const activeIndex = ref("/");
 const handleSelect = (key, keyPath) => {
   // console.log(key, keyPath);
@@ -50,19 +52,13 @@ const handleSelect = (key, keyPath) => {
 export default {
   name: "NavBar",
   data() {
-    return {
-      searchString: "",
-    };
+    return {};
   },
   methods: {
     goHome() {
       this.activeIndex = "/";
       console.log(this.activeIndex);
       this.$router.push({ name: "home" });
-    },
-    handleSearch() {
-      this.activeIndex = "/browse";
-      this.$router.push({ name: "Browse", query: { s: this.searchString } });
     },
   },
   beforeCreate() {

@@ -24,9 +24,11 @@ const input = ref("");
 <script>
 export default {
   async searchProduct() {
-    let res = await axios.get(`http://localhost:3000/search/`, {
+    let res = await axios.get(`http://localhost:3000/browse/search/`, {
       params: {
-        model: "",
+        start: 0,
+        end: 10,
+        searchString: input,
       },
     });
     console.log(res);

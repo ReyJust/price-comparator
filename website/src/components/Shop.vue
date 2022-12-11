@@ -1,5 +1,15 @@
+<script setup>
+import SearchComponent from "./SearchComponent.vue";
+</script>
+
 <template>
   <el-row :span="24" justify="center" :gutter="25">
+    <el-col>
+      <SearchComponent
+        :searchString="searchString"
+        @updateSearchString="updateSearchString"
+      />
+    </el-col>
     <el-col v-for="product in products" :key="product" :span="10">
       <el-card
         shadow="hover"
@@ -64,12 +74,14 @@
 
 <script>
 import axios from "axios";
+import { Search } from "@element-plus/icons-vue";
 
 export default {
   name: "Shop",
   data() {
     return {
       products: [],
+      searchString: "",
 
       currentPaginationNo: 1,
       pageSize: 10,
@@ -87,10 +99,16 @@ export default {
     async getProductList() {
       let end = this.currentPaginationNo + this.pageSize;
 
+      // if (this.$route.query.s) {
+      //   this.searchString = this.$route.query.s;
+      // }
+      console.log(this.searchString);
+
       let res = await axios.get(`http://localhost:3000/browse/product-list`, {
         params: {
           start: this.currentPaginationNo,
           end: end,
+          searchString: this.searchString,
         },
       });
       this.products = res.data.message;
@@ -111,7 +129,6 @@ export default {
         await this.getProductList();
       }
 
-      console.log(this.currentPaginationNo);
       this.$router.push({
         path: "browse",
         query: { start: this.currentPaginationNo },
@@ -120,6 +137,12 @@ export default {
 
     async changePageSize(command) {
       this.pageSize = parseInt(command);
+
+      await this.getProductList();
+    },
+
+    async updateSearchString(newValue) {
+      this.searchString = newValue;
 
       await this.getProductList();
     },
