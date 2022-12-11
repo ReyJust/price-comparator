@@ -4,13 +4,17 @@ import Footer from "./components/Footer.vue";
 </script>
 
 <template>
+  <!-- Main App Layout -->
   <div class="common-layout">
+    <!-- Navbar -->
     <el-header>
       <NavBar />
     </el-header>
+    <!-- Dynamic Body Content  with router-->
     <el-main>
       <RouterView />
     </el-main>
+    <!-- Main Footer -->
     <Footer />
   </div>
 </template>

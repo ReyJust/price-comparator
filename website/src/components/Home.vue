@@ -25,8 +25,10 @@ import { Right } from "@element-plus/icons-vue";
 
 <script>
 export default {
+  name: "Home",
   methods: {
     goToBrowse() {
+      this.activeIndex = "/browse";
       this.$router.push({ name: "Browse" });
     },
   },

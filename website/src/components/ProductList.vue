@@ -1,11 +1,11 @@
 <script setup>
-import SearchComponent from "./SearchComponent.vue";
+import SearchBar from "./SearchBar.vue";
 </script>
 
 <template>
   <el-row :span="24" justify="center" :gutter="25">
     <el-col>
-      <SearchComponent
+      <SearchBar
         :searchString="searchString"
         @updateSearchString="updateSearchString"
       />

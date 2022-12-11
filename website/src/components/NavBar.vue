@@ -20,27 +20,12 @@
         {{ route.name }}
       </el-menu-item>
     </template>
-    <div class="flex-grow" />
-    <!-- <div>
-      <el-input
-        style="width: 75vh; margin-top: 1vh"
-        v-model="searchString"
-        v-if="displaySearch"
-        placeholder="Product Title"
-        :prefix-icon="Search"
-        clearable
-        size="large"
-        @keyup.enter="handleSearch"
-      >
-      </el-input>
-    </div> -->
+    <!-- <div class="flex-grow" /> -->
   </el-menu>
 </template>
 
 <script setup>
 import { ref } from "vue";
-
-import SearchComponent from "./SearchComponent.vue";
 
 const activeIndex = ref("/");
 const handleSelect = (key, keyPath) => {
@@ -56,7 +41,7 @@ export default {
   },
   methods: {
     goHome() {
-      this.activeIndex = "/";
+      this.activeIndex = ref("/");
       this.$router.push({ name: "Home" });
     },
   },

@@ -19,7 +19,7 @@ import { Search } from "@element-plus/icons-vue";
 
 <script>
 export default {
-  name: "SearchComponent",
+  name: "SearchBar",
   props: { searchString: String },
   data() {
     return {};

@@ -1,21 +1,20 @@
 <script setup>
-import HomeComponent from "../components/HomeComponent.vue";
+import Home from "../components/Home.vue";
 </script>
 
 <template>
+  <!-- Presentation Page -->
   <el-main class="main">
     <main class="home">
       <div>
         <el-row>
           <el-col :span="12"
             ><div class="grid-content" />
-            <HomeComponent />
+            <Home />
           </el-col>
         </el-row>
-      </div>
-      <!-- <el-image src="public/pexels-karolina-grabowska-5632371.jpg"> </el-image> -->
-    </main></el-main
-  >
+      </div></main
+  ></el-main>
 </template>
 
 <style scoped>
