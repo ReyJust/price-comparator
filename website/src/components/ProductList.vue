@@ -143,6 +143,8 @@ export default {
     async updateSearchString(newValue) {
       this.searchString = newValue;
 
+      this.currentPaginationNo = 0;
+
       await this.getProductList();
     },
   },

@@ -52,7 +52,7 @@ export default {
         },
       });
       console.log(res);
-      this.prices = [res.data.message];
+      this.prices = res.data.message;
     },
   },
 };

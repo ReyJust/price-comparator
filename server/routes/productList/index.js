@@ -36,7 +36,7 @@ router.get("/product-list", (req, res, next) => {
                               id,
                               image_url
             FROM product p
-            WHERE LOWER(title) LIKE LOWER('%` +
+            WHERE LOWER(model) LIKE LOWER('%` +
         query.searchString +
         `%') ) AS sub) AS sbb
       WHERE pagination_no >= $1 AND pagination_no < $2;`;

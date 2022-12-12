@@ -58,7 +58,7 @@ router.get("/compare", function (req, res, next) {
         if (err) {
           return next(err);
         }
-        res.status(200).json(success(result.rows[0], {}, res.statusCode));
+        res.status(200).json(success(result.rows, {}, res.statusCode));
       }
     );
   } catch (err) {
