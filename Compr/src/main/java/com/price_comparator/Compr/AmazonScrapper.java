@@ -11,8 +11,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Controller;
-import org.springframework.stereotype.Service;
 
 /**
  * The Amazon Scrapper Class
@@ -33,7 +31,7 @@ public class AmazonScrapper extends Thread {
      * The scrapper constructor
      *
      * @param {Website} website
-     * @param {String} userAgent
+     * @param {String}  userAgent
      */
     public AmazonScrapper() {
         this.website = new Website("Amazon",
@@ -41,8 +39,8 @@ public class AmazonScrapper extends Thread {
                 "https://www.amazon.com");
         this.searchPageURL = website.getUrl() +
                 "/s?k=monitor&page=%d&ref=nb_sb_noss";
-        this.pageQty = 10;
-        this.userAgent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36";
+        this.pageQty = 20;
+        this.userAgent = "Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36";
     }
 
     /**
@@ -101,34 +99,35 @@ public class AmazonScrapper extends Thread {
      * From the search page, return each product link found in the search result
      * div.
      *
-     * @param {int} pageNo
+     * @param {int}      pageNo
      * @param {Document} searchPage
      * @return productLinks
      */
     public List<String> getProductLinks(int pageNo, Document searchPage) {
         // Select the product list.
-        Elements productList = searchPage.select("span[data-component-type=s-search-results]").select("div[data-component-type=s-search-result]");
+        Elements productList = searchPage.select("span[data-component-type=s-search-results]")
+                .select("div[data-component-type=s-search-result]");
 
         List<String> productLinks = new ArrayList<String>();
 
         for (Element element : productList) {
             // We skip sponsored products and ones without prices
-            Element productHavePrice =
-                    element.select("span[class=a-price-whole]").first();
+            Element productHavePrice = element.select("span[class=a-price-whole]").first();
 
             Element isSponsored = element.select("div[class=a-row a-spacing-micro]").first();
 
             if (productHavePrice != null && isSponsored == null) {
                 String productUrl = element
                         .select("a[class=a-link-normal s-underline-text s-underline-link-text s-link-style a-text-normal]")
-//                class="a-link-normal.s-underline-text.s-underline-link-text.s-link-style.a-text-normal"
+                        // class="a-link-normal.s-underline-text.s-underline-link-text.s-link-style.a-text-normal"
                         .attr("href");
 
                 productLinks.add(productUrl);
             }
 
         }
-        System.out.println("[" + website.getTitle() + "][PAGE" + pageNo + "] Gathered " + productLinks.size() + " links.");
+        System.out.println(
+                "[" + website.getTitle() + "][PAGE" + pageNo + "] Gathered " + productLinks.size() + " links.");
 
         return productLinks;
     }
@@ -163,8 +162,7 @@ public class AmazonScrapper extends Thread {
      * @return Monitor brand.
      */
     public String getProductBrand(Document productPage) {
-        return
-                productPage.getElementsByClass("po-brand").first().lastElementChild().firstElementChild().text();
+        return productPage.getElementsByClass("po-brand").first().lastElementChild().firstElementChild().text();
     }
 
     /**
@@ -179,12 +177,10 @@ public class AmazonScrapper extends Thread {
 
         try {
             Element detail_section = productDetails.getElementById("prodDetails");
-            Element detail_table =
-                    detail_section.getElementById("productDetails_techSpec_section_2");
+            Element detail_table = detail_section.getElementById("productDetails_techSpec_section_2");
 
             if (detail_table == null) {
-                detail_table =
-                        detail_section.getElementById("productDetails_detailBullets_sections1");
+                detail_table = detail_section.getElementById("productDetails_detailBullets_sections1");
             }
 
             model = detail_table.select("th:contains(Item model number) + td").text();
@@ -209,8 +205,7 @@ public class AmazonScrapper extends Thread {
             Element price_section = productPage.select("div[class=a-box-group]").first()
                     .getElementById("corePrice_feature_div");
 
-            String price_str =
-                    price_section.select("span[class=a-offscreen]").first().text();
+            String price_str = price_section.select("span[class=a-offscreen]").first().text();
             price = Double.parseDouble(price_str.substring(1, price_str.length()));
         } catch (Exception e) {
             // Not found. Keep it null.
@@ -229,9 +224,8 @@ public class AmazonScrapper extends Thread {
     public Double getProductScreenSize(Document productPage) {
         Double size = null;
         try {
-            String size_w_metric =
-                    productPage.getElementsByClass("po-display.size").first().lastElementChild()
-                            .firstElementChild().text();
+            String size_w_metric = productPage.getElementsByClass("po-display.size").first().lastElementChild()
+                    .firstElementChild().text();
 
             size = Double.parseDouble(size_w_metric.split(" ")[0]);
         } catch (Exception e) {
@@ -252,9 +246,8 @@ public class AmazonScrapper extends Thread {
         String res = null;
         try {
 
-            res =
-                    productPage.getElementsByClass("po-display.resolution_maximum").first().lastElementChild()
-                            .firstElementChild().text();
+            res = productPage.getElementsByClass("po-display.resolution_maximum").first().lastElementChild()
+                    .firstElementChild().text();
         } catch (Exception e) {
             // Not found. Keep it null.
         }
@@ -272,9 +265,8 @@ public class AmazonScrapper extends Thread {
     public Integer getProductRefreshRate(Document productPage) {
         Integer rate = null;
         try {
-            String rate_w_metric =
-                    productPage.getElementsByClass("po-refresh_rate").first().lastElementChild()
-                            .firstElementChild().text();
+            String rate_w_metric = productPage.getElementsByClass("po-refresh_rate").first().lastElementChild()
+                    .firstElementChild().text();
 
             rate = Integer.parseInt(rate_w_metric.split(" ")[0]);
         } catch (Exception e) {
@@ -304,11 +296,11 @@ public class AmazonScrapper extends Thread {
         return null;
     }
 
-
     @Override
     public void run() {
         System.out
-                .println("[INFO] " + this.website.getTitle() + " Scrapper Started.\n[INFO] Fetching" + pageQty + " pages.");
+                .println("[INFO] " + this.website.getTitle() + " Scrapper Started.\n[INFO] Fetching" + pageQty
+                        + " pages.");
         int total_products = 0;
 
         saveWebsite();
@@ -318,10 +310,16 @@ public class AmazonScrapper extends Thread {
             Document searchPage = getSearchPage(pageNo);
             List<String> productLinks = getProductLinks(pageNo, searchPage);
 
+            if (pageNo == 1 && productLinks.size() == 0) {
+                // Bug first page never works, so we retry to get its links
+                System.out.println("[DEBUG] Retrying 1st page.");
+                searchPage = getSearchPage(pageNo);
+                productLinks = getProductLinks(pageNo, searchPage);
+            }
+
             for (String link : productLinks) {
                 Document productPage = getPage(this.website.getUrl() + link);
-                Element productDetails =
-                        productPage.getElementById("productDetails_feature_div");
+                Element productDetails = productPage.getElementById("productDetails_feature_div");
 
                 String image = getProductImage(productPage);
                 String title = getProductTitle(productPage);
@@ -332,33 +330,43 @@ public class AmazonScrapper extends Thread {
                 String displayResolution = getProductDisplayResolution(productPage);
                 Integer refreshRate = getProductRefreshRate(productPage);
 
+                String productId = model + website.getId();
+
                 // System.out.println(this.website.getUrl() + link);
                 System.out.println(String.format("""
-                                [%s]------\r
-                                Link: %s\r
-                                Image: %s\r
-                                Title: %s\r
-                                Brand: %s\r
-                                Model: %s\r
-                                Price: $ %f\r
-                                Display size: %f\"\r
-                                Resolution: %s\r
-                                Refresh Rate: %d Hz\r
-                                ----------------
-                                """, website.getTitle(), website.getUrl() + link, image, title, brand, model,
+                        [%s]------\r
+                        Link: %s\r
+                        Image: %s\r
+                        Title: %s\r
+                        Brand: %s\r
+                        Model: %s\r
+                        Price: $ %f\r
+                        Display size: %f\"\r
+                        Resolution: %s\r
+                        Refresh Rate: %d Hz\r
+                        ----------------
+                        """, website.getTitle(), website.getUrl() + link, image, title, brand, model,
                         price, screenSize,
                         displayResolution,
                         refreshRate));
 
                 // We keep product which have brand, model and price
-                if (brand != null && model != null && price != null) {
-                    Product product = new Product(model, title, website.getUrl()+link, brand, website,
-                "", image, price);
+                if (brand != null && model != null && model != "" && model != " " && price != null) {
+                    model = model.trim();
 
-                    ProductDetails details = new ProductDetails(product, website, screenSize, displayResolution, refreshRate);
+                    Product product = new Product(productId, model, title, website.getUrl() + link, brand, website,
+                            "", image, price);
 
-                    hibernate.addProduct(product);
-                    hibernate.addProductDetails(details);
+                    ProductDetails details = new ProductDetails(product, website, screenSize, displayResolution,
+                            refreshRate);
+
+                    try {
+                        hibernate.addProduct(product);
+                        hibernate.addProductDetails(details);
+
+                    } catch (Exception e) {
+                        System.out.println("[ERROR] Failed to save product to db: " + e);
+                    }
 
                     total_products += 1;
                 }
@@ -368,7 +376,7 @@ public class AmazonScrapper extends Thread {
             ;
             requestSleep();
         }
-//        hibernate.shutDown();
+        hibernate.shutDown();
         System.out.println("[" + website.getTitle() + "] FINISHED SCRAPPING: Save " +
                 total_products + " valid products.");
 

@@ -57,7 +57,7 @@ public class NewEggScrapper extends Thread {
         // }
 
         Document searchPage = getPage(url);
-        System.out.println("[INFO] Fetched Page " + pageNo+": "+url);
+        System.out.println("[INFO] Fetched Page " + pageNo + ": " + url);
         // System.out.println(searchPage);
         return searchPage;
     }
@@ -114,7 +114,8 @@ public class NewEggScrapper extends Thread {
             // DO nothing.
         }
 
-        System.out.println("[" + website.getTitle() + "][PAGE" + pageNo + "] Gathered " + productLinks.size() + " links.");
+        System.out.println(
+                "[" + website.getTitle() + "][PAGE" + pageNo + "] Gathered " + productLinks.size() + " links.");
 
         return productLinks;
     }
@@ -126,8 +127,7 @@ public class NewEggScrapper extends Thread {
         String image = null;
 
         try {
-            image =
-                    productPage.getElementsByClass("product-view-img-original").first().attr("src");
+            image = productPage.getElementsByClass("product-view-img-original").first().attr("src");
         } catch (Exception e) {
             // TODO: handle exception
         }
@@ -197,8 +197,7 @@ public class NewEggScrapper extends Thread {
         Double price = null;
 
         try {
-            String price_raw =
-                    productPage.select("div[class=product-price]").first().select("li.price-current").text();
+            String price_raw = productPage.select("div[class=product-price]").first().select("li.price-current").text();
 
             price = Double.parseDouble(price_raw.substring(1, price_raw.length()));
 
@@ -240,7 +239,6 @@ public class NewEggScrapper extends Thread {
             if (match.find()) {
                 res = match.group(0);
             }
-
 
         } catch (Exception e) {
             // Not found. Keep it null.
@@ -295,6 +293,13 @@ public class NewEggScrapper extends Thread {
             Document searchPage = getSearchPage(pageNo);
             List<String> productLinks = getProductLinks(pageNo, searchPage);
 
+            if (pageNo == 1 && productLinks.size() == 0) {
+                // Bug first page never works, so we retry to get its links
+                System.out.println("[DEBUG] Retrying 1st page.");
+                searchPage = getSearchPage(pageNo);
+                productLinks = getProductLinks(pageNo, searchPage);
+            }
+
             for (String link : productLinks) {
                 Document productPage = getPage(link);
 
@@ -306,12 +311,12 @@ public class NewEggScrapper extends Thread {
                 String displayResolution = null;
                 Integer refreshRate = null;
                 try {
-                    Element productModelTable =
-                            productDetails.lastElementChild().child(1).select("caption:contains(Model)")
-                                    .first().parent();
-                    Element productDisplayTable =
-                            productDetails.lastElementChild().child(1).select("caption:contains(Display)")
-                                    .first().parent();
+                    Element productModelTable = productDetails.lastElementChild().child(1)
+                            .select("caption:contains(Model)")
+                            .first().parent();
+                    Element productDisplayTable = productDetails.lastElementChild().child(1)
+                            .select("caption:contains(Display)")
+                            .first().parent();
 
                     brand = getProductBrand(productModelTable);
                     model = getProductModel(productModelTable, brand);
@@ -327,32 +332,43 @@ public class NewEggScrapper extends Thread {
                 String title = getProductTitle(productPage);
                 Double price = getProductPrice(productPage);
 
+                String productId = model + website.getId();
+
                 // System.out.println(link);
                 System.out.println(String.format("""
-                                [%s]------\r
-                                Link: %s\r
-                                Image: %s\r
-                                Title: %s\r
-                                Brand: %s\r
-                                Model: %s\r
-                                Price: $ %f\r
-                                Display size: %f\"\r
-                                Resolution: %s\r
-                                Refresh Rate: %d Hz\r
-                                ----------------\n
-                                """, website.getTitle(), link, image, title, brand, model, price, screenSize,
+                        [%s]------\r
+                        Link: %s\r
+                        Image: %s\r
+                        Title: %s\r
+                        Brand: %s\r
+                        Model: %s\r
+                        Price: $ %f\r
+                        Display size: %f\"\r
+                        Resolution: %s\r
+                        Refresh Rate: %d Hz\r
+                        ----------------\n
+                        """, website.getTitle(), link, image, title, brand, model, price, screenSize,
                         displayResolution,
                         refreshRate));
 
                 // We keep product which have brand, model and price
-                if (brand != null && model != null && price != null) {
-                    Product product = new Product(model, title, website.getUrl()+link, brand, website,
+                if (brand != null && model != null && model != "" && model != " " && price != null) {
+
+                    model = model.trim();
+
+                    Product product = new Product(productId, model, title, link, brand, website,
                             "", image, price);
 
-                    ProductDetails details = new ProductDetails(product, website, screenSize, displayResolution, refreshRate);
+                    ProductDetails details = new ProductDetails(product, website, screenSize, displayResolution,
+                            refreshRate);
 
-                    hibernate.addProduct(product);
-                    hibernate.addProductDetails(details);
+                    try {
+                        hibernate.addProduct(product);
+                        hibernate.addProductDetails(details);
+
+                    } catch (Exception e) {
+                        System.out.println("[ERROR] Failed to save product to db: " + e);
+                    }
 
                     total_products += 1;
 

@@ -14,7 +14,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- *  Class for agos Scrapper
+ * Class for agos Scrapper
  */
 @Component
 public class ArgosScrapper extends Thread {
@@ -35,9 +35,10 @@ public class ArgosScrapper extends Thread {
         this.website = new Website("Argos", "https://media.4rgos.it/i/Argos/logo_argos2x?w=120&h=103&qlt=75&fmt=png",
                 "https://www.argos.co.uk");
         this.searchPageURL = website.getUrl() + "/search/monitor/opt/page:%d";
-        this.pageQty = 6;
+        this.pageQty = 4;
         this.userAgent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36";
     }
+
     /**
      * Add the website to the database
      */
@@ -104,7 +105,8 @@ public class ArgosScrapper extends Thread {
                 Elements list = group.firstElementChild().children();
                 // Loop in each product of the part
                 for (Element product : list) {
-                    String productUrl = product.firstElementChild().firstElementChild().firstElementChild().select("a").attr("href");
+                    String productUrl = product.firstElementChild().firstElementChild().firstElementChild().select("a")
+                            .attr("href");
                     productLinks.add(productUrl);
 
                 }
@@ -114,7 +116,8 @@ public class ArgosScrapper extends Thread {
             // DO nothing.
         }
 
-        System.out.println("[" + website.getTitle() + "][PAGE" + pageNo + "] Gathered " + productLinks.size() + "links.");
+        System.out
+                .println("[" + website.getTitle() + "][PAGE" + pageNo + "] Gathered " + productLinks.size() + "links.");
 
         return productLinks;
     }
@@ -182,6 +185,7 @@ public class ArgosScrapper extends Thread {
 
     /**
      * Get the product brand
+     * 
      * @param brandModel
      *
      * @return Monitor brand.
@@ -230,7 +234,7 @@ public class ArgosScrapper extends Thread {
             price = Double.parseDouble(price_raw.substring(1, price_raw.length()));
 
         } catch (Exception e) {
-        // Not found. Keep it null.
+            // Not found. Keep it null.
         }
         return price;
     }
@@ -245,12 +249,14 @@ public class ArgosScrapper extends Thread {
     public Double getProductScreenSize(Element productPage) {
         Double size = null;
         try {
-            String size_w_metric = productPage.select("div.product-description-content-text > ul").first().firstElementChild() .text();
+            String size_w_metric = productPage.select("div.product-description-content-text > ul").first()
+                    .firstElementChild().text();
 
-                    size = Double.parseDouble(size_w_metric.split("in")[0]);
+            size = Double.parseDouble(size_w_metric.split("in")[0]);
         } catch (Exception e) {
-        // Not found. Keep it null.
-        } return size;
+            // Not found. Keep it null.
+        }
+        return size;
     }
 
     /**
@@ -264,7 +270,8 @@ public class ArgosScrapper extends Thread {
         String res = null;
 
         try {
-            String resRow = productPage.select("div.product-description-content-text > ul > li:contains(Resolution) ").text();
+            String resRow = productPage.select("div.product-description-content-text > ul > li:contains(Resolution) ")
+                    .text();
 
             // Split str to get the 0000 x 0000 pattern.
             Pattern regexPattern = Pattern.compile("(\\b\\d+\\sx\\s\\d+\\b)");
@@ -275,8 +282,9 @@ public class ArgosScrapper extends Thread {
             }
 
         } catch (Exception e) {
-        // Not found. Keep it null.
-        } return res;
+            // Not found. Keep it null.
+        }
+        return res;
     }
 
     /**
@@ -289,7 +297,8 @@ public class ArgosScrapper extends Thread {
     public Integer getProductRefreshRate(Element productPage) {
         Integer rate = null;
         try {
-            String rateRow = productPage.select("div.product-description-content-text > ul > li:contains(refresh rate) ") .text();
+            String rateRow = productPage
+                    .select("div.product-description-content-text > ul > li:contains(refresh rate) ").text();
 
             // Split str to get the 00Hz pattern excluding Hz.
             Pattern regexPattern = Pattern.compile("(\\b\\d{2,3})Hz\\b");
@@ -299,8 +308,9 @@ public class ArgosScrapper extends Thread {
                 rate = Integer.parseInt(match.group(1));
             }
         } catch (Exception e) {
-        // Not found. Keep it null.
-        } return rate;
+            // Not found. Keep it null.
+        }
+        return rate;
     }
 
     /**
@@ -317,7 +327,7 @@ public class ArgosScrapper extends Thread {
         try {
             Thread.sleep(randomNum);
         } catch (InterruptedException e) {
-        // TODO Auto-generated catch block
+            // TODO Auto-generated catch block
             e.printStackTrace();
         }
 
@@ -326,7 +336,8 @@ public class ArgosScrapper extends Thread {
 
     @Override
     public void run() {
-        System.out.println("[INFO] " + website.getTitle() + " Scrapper Started.\n[INFO]Fetching" + pageQty + "pages."); int total_products = 0;
+        System.out.println("[INFO] " + website.getTitle() + " Scrapper Started.\n[INFO]Fetching" + pageQty + "pages.");
+        int total_products = 0;
 
         saveWebsite();
 
@@ -334,6 +345,13 @@ public class ArgosScrapper extends Thread {
 
             Document searchPage = getSearchPage(pageNo);
             List<String> productLinks = getProductLinks(pageNo, searchPage);
+
+            if (pageNo == 1 && productLinks.size() == 0) {
+                // Bug first page never works, so we retry to get its links
+                System.out.println("[DEBUG] Retrying 1st page.");
+                searchPage = getSearchPage(pageNo);
+                productLinks = getProductLinks(pageNo, searchPage);
+            }
 
             for (String link : productLinks) {
                 // Product Url are relative, adding base.
@@ -351,6 +369,7 @@ public class ArgosScrapper extends Thread {
                 String displayResolution = getProductDisplayResolution(productPage);
                 Integer refreshRate = getProductRefreshRate(productPage);
 
+                String productId = model + website.getId();
                 // System.out.println(link);
                 System.out.println(String.format("""
                         [%s]------\r
@@ -360,21 +379,30 @@ public class ArgosScrapper extends Thread {
                         Brand: %s\r
                         Model: %s\r
                         Price: $ %f\r
-                        Display size: %f"\r
+                        Display size: %f\"\r
                         Resolution: %s\r
                         Refresh Rate: %d Hz\r
                         ----------------
-                        """, website.getTitle(), website.getUrl() + link, image, title, brand, model, price, screenSize, displayResolution, refreshRate));
+                        """, website.getTitle(), website.getUrl() + link, image, title, brand, model, price, screenSize,
+                        displayResolution, refreshRate));
 
                 // We keep product which have brand, model and price
-                if (brand != null && model != null && price != null) {
-                    Product product = new Product(model, title, website.getUrl()+link, brand, website,
+                if (brand != null && model != null && model != "" && model != " " && price != null) {
+                    model = model.trim();
+
+                    Product product = new Product(productId, model, title, website.getUrl() + link, brand, website,
                             "", image, price);
 
-                    ProductDetails details = new ProductDetails(product, website, screenSize, displayResolution, refreshRate);
+                    ProductDetails details = new ProductDetails(product, website, screenSize, displayResolution,
+                            refreshRate);
 
-                    hibernate.addProduct(product);
-                    hibernate.addProductDetails(details);
+                    try {
+                        hibernate.addProduct(product);
+                        hibernate.addProductDetails(details);
+
+                    } catch (Exception e) {
+                        System.out.println("[ERROR] Failed to save product to db: " + e);
+                    }
 
                     total_products += 1;
                 }
@@ -384,7 +412,8 @@ public class ArgosScrapper extends Thread {
             requestSleep();
         }
 
-        System.out.println("[" + website.getTitle() + "] FINISHED SCRAPPING: Save " + total_products + " valid products.");
+        System.out.println(
+                "[" + website.getTitle() + "] FINISHED SCRAPPING: Save " + total_products + " valid products.");
 
     }
 }

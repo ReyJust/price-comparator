@@ -9,12 +9,12 @@ import static javax.persistence.GenerationType.SEQUENCE;
 
 @Entity(name = "product")
 public class Product {
+    // @SequenceGenerator(name = "website_sequence", sequenceName =
+    // "website_sequence", allocationSize = 1)
+    // @GeneratedValue(strategy = SEQUENCE, generator = "website_sequence")
     @Id
-    @SequenceGenerator(name = "website_sequence", sequenceName =
-            "website_sequence", allocationSize = 1)
-    @GeneratedValue(strategy = SEQUENCE, generator = "website_sequence")
     @Column(name = "id", updatable = false)
-    private Long id;
+    private String id;
 
     @Column(name = "model", nullable = false)
     private String model;
@@ -28,15 +28,16 @@ public class Product {
     @Column(name = "brand", nullable = false)
     private String brand;
 
-//    @ManyToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.ALL)
-//    @JoinColumn(name = "website_id", nullable = false)
-//    @OnDelete(action = OnDeleteAction.CASCADE)
+    // @ManyToOne(fetch = FetchType.LAZY, optional = false, cascade =
+    // CascadeType.ALL)
+    // @JoinColumn(name = "website_id", nullable = false)
+    // @OnDelete(action = OnDeleteAction.CASCADE)
     @ManyToOne()
-    @JoinColumn(name ="website_id")
+    @JoinColumn(name = "website_id")
     private Website website;
 
-//    @Column(name = "website_id", nullable = false)
-//    private int websiteId;
+    // @Column(name = "website_id", nullable = false)
+    // private int websiteId;
 
     @Column(name = "description", nullable = true)
     private String description;
@@ -54,8 +55,9 @@ public class Product {
     public Product() {
     }
 
-    public Product(String model, String title, String url, String brand,
-                             Website website, String description, String imageUrl, double price) {
+    public Product(String id, String model, String title, String url, String brand,
+            Website website, String description, String imageUrl, double price) {
+        this.id = id;
         this.model = model;
         this.title = title;
         this.url = url;
@@ -66,7 +68,7 @@ public class Product {
         this.price = price;
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 

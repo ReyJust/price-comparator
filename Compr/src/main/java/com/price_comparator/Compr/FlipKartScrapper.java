@@ -32,8 +32,10 @@ public class FlipKartScrapper extends Thread {
                 +
                 "/search?q=monitor&otracker=search&otracker1=search&marketplace=FLIPKART&as-show=on&as=off&as-pos=1&as-type=HISTORY&as-backfill=on&page=%d";
         this.pageQty = 10;
-        this.userAgent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36";;
+        this.userAgent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36";
+        ;
     }
+
     /**
      * Add the website to the database
      */
@@ -60,7 +62,7 @@ public class FlipKartScrapper extends Thread {
         // }
 
         Document searchPage = getPage(url);
-        System.out.println("[INFO] Fetched Page " + pageNo+ ": "+url);
+        System.out.println("[INFO] Fetched Page " + pageNo + ": " + url);
         // System.out.println(searchPage);
 
         return searchPage;
@@ -100,9 +102,9 @@ public class FlipKartScrapper extends Thread {
         List<String> productLinks = new ArrayList<String>();
 
         try {
-            Elements pListRow =
-                    searchPage.select("div._1YokD2._3Mn1Gg").last().children().select("div._1AtVbE.col-12-12")
-                            .select("div._13oc-S");
+            Elements pListRow = searchPage.select("div._1YokD2._3Mn1Gg").last().children()
+                    .select("div._1AtVbE.col-12-12")
+                    .select("div._13oc-S");
 
             for (Element list : pListRow) {
                 Elements ps = list.children();
@@ -116,10 +118,11 @@ public class FlipKartScrapper extends Thread {
             }
 
         } catch (Exception e) {
-// DO nothing.
+            // DO nothing.
         }
 
-        System.out.println("[" + website.getTitle() + "][PAGE" + pageNo + "] Gathered " + productLinks.size() + " links.");
+        System.out.println(
+                "[" + website.getTitle() + "][PAGE" + pageNo + "] Gathered " + productLinks.size() + " links.");
 
         return productLinks;
     }
@@ -131,7 +134,8 @@ public class FlipKartScrapper extends Thread {
     public String getProductImage(Document productPage) {
         String image = null;
         try {
-            image = productPage.select("div[class=CXW8mj _3nMexc]").select("img[class=_396cs4 _2amPTt _3qGmMb _3exPp9]").attr("src");
+            image = productPage.select("div[class=CXW8mj _3nMexc]").select("img[class=_396cs4 _2amPTt _3qGmMb _3exPp9]")
+                    .attr("src");
 
         } catch (Exception e) {
             // Not found. Keep it null.
@@ -151,15 +155,16 @@ public class FlipKartScrapper extends Thread {
     /**
      *
      * @return Cannot find Model and Brand separately, Using regex to filter the
-     * product title.
+     *         product title.
      */
     public String decomposeTitle(String title) {
         String brandModel = null;
         try {
             Pattern regexPattern = Pattern.compile(".+?(?=\\s\\d{2,3})");
-// Identified a pattern in product title.
-// Always: [BRAND] [MODEL ?MODEL] [SIZE] ...
-// Breaks the line when encountering the screen size, 2 or 3 digit, then first word is brand.
+            // Identified a pattern in product title.
+            // Always: [BRAND] [MODEL ?MODEL] [SIZE] ...
+            // Breaks the line when encountering the screen size, 2 or 3 digit, then first
+            // word is brand.
             Matcher match = regexPattern.matcher(title);
 
             if (match.find()) {
@@ -167,7 +172,7 @@ public class FlipKartScrapper extends Thread {
             }
 
         } catch (Exception e) {
-// Not found. Keep it null.
+            // Not found. Keep it null.
         }
 
         return brandModel;
@@ -193,7 +198,7 @@ public class FlipKartScrapper extends Thread {
             table = productPage.select("div._3dtsli > div > div:contains(General)").parents();
 
         } catch (Exception e) {
-// Not found. Keep it null.
+            // Not found. Keep it null.
         }
         return table;
     }
@@ -209,7 +214,7 @@ public class FlipKartScrapper extends Thread {
             table = productPage.select("div._3dtsli > div > div:contains(Display Features)").parents();
 
         } catch (Exception e) {
-// Not found. Keep it null.
+            // Not found. Keep it null.
         }
         return table;
     }
@@ -225,7 +230,7 @@ public class FlipKartScrapper extends Thread {
             model = specTable.select("table > tbody > tr > td:contains(Model Name) + td > ul > li").text();
 
         } catch (Exception e) {
-// Not found. Keep it null.
+            // Not found. Keep it null.
         }
         return model;
     }
@@ -266,7 +271,7 @@ public class FlipKartScrapper extends Thread {
             }
 
         } catch (Exception e) {
-// Not found. Keep it null.
+            // Not found. Keep it null.
         }
         return size;
     }
@@ -281,10 +286,10 @@ public class FlipKartScrapper extends Thread {
         try {
             res = specTable.select("table > tbody > tr > td:contains(Resolution) + td > ul > li").first().text();
 
-                    res = res.substring(0, res.lastIndexOf(" "));
+            res = res.substring(0, res.lastIndexOf(" "));
 
         } catch (Exception e) {
-// Not found. Keep it null.
+            // Not found. Keep it null.
         }
 
         if (res.indexOf('x') == -1) {
@@ -302,11 +307,12 @@ public class FlipKartScrapper extends Thread {
         Integer rate = null;
 
         try {
-            String rateWithMetric = displaySpecTable.select("table > tbody > tr > td:contains(Maximum Refresh Rate) + td > ul > li").text();
+            String rateWithMetric = displaySpecTable
+                    .select("table > tbody > tr > td:contains(Maximum Refresh Rate) + td > ul > li").text();
             rate = Integer.parseInt(rateWithMetric.substring(0, rateWithMetric.indexOf(' ')));
 
         } catch (Exception e) {
-// Not found. Keep it null.
+            // Not found. Keep it null.
         }
 
         return rate;
@@ -333,7 +339,8 @@ public class FlipKartScrapper extends Thread {
 
     @Override
     public void run() {
-        System.out.println("[INFO] " + website.getTitle() + " Scrapper Started.\n[INFO] Fetching " + pageQty + " pages.");
+        System.out
+                .println("[INFO] " + website.getTitle() + " Scrapper Started.\n[INFO] Fetching " + pageQty + " pages.");
 
         saveWebsite();
 
@@ -346,9 +353,16 @@ public class FlipKartScrapper extends Thread {
 
             List<String> productLinks = getProductLinks(pageNo, searchPage);
 
+            if (pageNo == 1 && productLinks.size() == 0) {
+                // Bug first page never works, so we retry to get its links
+                System.out.println("[DEBUG] Retrying 1st page.");
+                searchPage = getSearchPage(pageNo);
+                productLinks = getProductLinks(pageNo, searchPage);
+            }
+
             for (String link : productLinks) {
 
-// Product Url are relative, adding base.
+                // Product Url are relative, adding base.
                 Document productPage = getPage(website.getUrl() + link);
 
                 String image = getProductImage(productPage);
@@ -366,33 +380,44 @@ public class FlipKartScrapper extends Thread {
                 Elements displaySpecTable = getSpecificationTable(productPage);
                 Integer refreshRate = getProductRefreshRate(displaySpecTable);
 
+                String productId = model + website.getId();
+
                 // System.out.println(website.getUrl() + link);
                 System.out.println(String.format("""
-                [%s]------\r
-                Link: %s\r
-                Image: %s\r
-                Title: %s\r
-                Brand: %s\r
-                Model: %s\r
-                Price: $ %f\r
-                Display size: %f\"\r
-                Resolution: %s\r
-                Refresh Rate: %d Hz\r
-                ----------------
-                """, website.getTitle(), website.getUrl() + link, image, title, brand, model,
-                                        price, screenSize,
-                                        displayResolution,
-                                        refreshRate));
+                        [%s]------\r
+                        Link: %s\r
+                        Image: %s\r
+                        Title: %s\r
+                        Brand: %s\r
+                        Model: %s\r
+                        Price: $ %f\r
+                        Display size: %f\"\r
+                        Resolution: %s\r
+                        Refresh Rate: %d Hz\r
+                        ----------------
+                        """, website.getTitle(), website.getUrl() + link, image, title, brand, model,
+                        price, screenSize,
+                        displayResolution,
+                        refreshRate));
 
                 // We keep product which have brand, model and price
-                if (brand != null && model != null && price != null) {
-                    Product product = new Product(model, title, website.getUrl()+link, brand, website,
+                if (brand != null && model != null && model != "" && model != " " && price != null) {
+
+                    model = model.trim();
+
+                    Product product = new Product(productId, model, title, website.getUrl() + link, brand, website,
                             "", image, price);
 
-                    ProductDetails details = new ProductDetails(product, website, screenSize, displayResolution, refreshRate);
+                    ProductDetails details = new ProductDetails(product, website, screenSize, displayResolution,
+                            refreshRate);
 
-                    hibernate.addProduct(product);
-                    hibernate.addProductDetails(details);
+                    try {
+                        hibernate.addProduct(product);
+                        hibernate.addProductDetails(details);
+
+                    } catch (Exception e) {
+                        System.out.println("[ERROR] Failed to save product to db: " + e);
+                    }
 
                     total_products += 1;
 

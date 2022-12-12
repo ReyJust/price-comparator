@@ -25,7 +25,7 @@ public class BoxScrapper extends Thread {
         this.website = new Website("The Box", "https://www.box.co.uk/Images/box-logo2-FP_2110111013.svg",
                 "https://www.box.co.uk");
         this.searchPageURL = website.getUrl() + "/monitors";
-        this.pageQty = 5;
+        this.pageQty = 10;
         this.userAgent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36";
     }
 
@@ -77,7 +77,7 @@ public class BoxScrapper extends Thread {
         }
 
         Document searchPage = getPage(url);
-        System.out.println("[INFO] Fetched Page " + pageNo+ ": "+url);
+        System.out.println("[INFO] Fetched Page " + pageNo + ": " + url);
         // System.out.println(searchPage);
         return searchPage;
     }
@@ -95,7 +95,8 @@ public class BoxScrapper extends Thread {
             // Select the product list.
             productList = searchPage.select("div.product-list").select("div.product-list-item");
 
-            System.out.println("[" + website.getTitle() + "][PAGE" + pageNo + "] Gathered " + productList.size() + " products element.");
+            System.out.println("[" + website.getTitle() + "][PAGE" + pageNo + "] Gathered " + productList.size()
+                    + " products element.");
 
         } catch (Exception e) {
             // DO nothing.
@@ -124,7 +125,7 @@ public class BoxScrapper extends Thread {
     }
 
     /**
-     * @param  productElement
+     * @param productElement
      *
      * @return Monitor image.
      */
@@ -191,11 +192,14 @@ public class BoxScrapper extends Thread {
         Double price = null;
 
         try {
-            String price_raw = productElement.select("div.p-list-price-wrapper").select("p.p-list-sell > span.pq-price") .text(); price = Double.parseDouble(price_raw.substring(1, price_raw.length()));
+            String price_raw = productElement.select("div.p-list-price-wrapper").select("p.p-list-sell > span.pq-price")
+                    .text();
+            price = Double.parseDouble(price_raw.substring(1, price_raw.length()));
 
         } catch (Exception e) {
-// Not found. Keep it null.
-        } return price;
+            // Not found. Keep it null.
+        }
+        return price;
     }
 
     /**
@@ -206,7 +210,8 @@ public class BoxScrapper extends Thread {
     public Double getProductScreenSize(Element productElement) {
         Double size = null;
         try {
-            String size_w_metric = productElement.select("div.p-list-points-wrapper").select("li:contains(Display)").text();
+            String size_w_metric = productElement.select("div.p-list-points-wrapper").select("li:contains(Display)")
+                    .text();
 
             size = Double.parseDouble(size_w_metric.split("\"")[0]);
 
@@ -249,9 +254,10 @@ public class BoxScrapper extends Thread {
     public Integer getProductRefreshRate(Element productElement) {
         Integer rate = null;
         try {
-            String rateRow = productElement.select("div.p-list-points-wrapper").select("li:contains(Refresh Rate) ") .text();
+            String rateRow = productElement.select("div.p-list-points-wrapper").select("li:contains(Refresh Rate) ")
+                    .text();
 
-// Split str to get the 00Hz pattern excluding Hz.
+            // Split str to get the 00Hz pattern excluding Hz.
             Pattern regexPattern = Pattern.compile("(\\b\\d{2,3})Hz\\b");
             Matcher match = regexPattern.matcher(rateRow);
 
@@ -259,8 +265,9 @@ public class BoxScrapper extends Thread {
                 rate = Integer.parseInt(match.group(1));
             }
         } catch (Exception e) {
-// Not found. Keep it null.
-        } return rate;
+            // Not found. Keep it null.
+        }
+        return rate;
     }
 
     /*
@@ -295,7 +302,15 @@ public class BoxScrapper extends Thread {
             Document searchPage = getSearchPage(pageNo);
             Elements productList = getProductList(pageNo, searchPage);
 
-            // Since We can gather all the information require of a product directly from the rich search page, we do not need to visit product page individually.
+            if (pageNo == 1 && productList.size() == 0) {
+                // Bug first page never works, so we retry to get its links
+                System.out.println("[DEBUG] Retrying 1st page.");
+                searchPage = getSearchPage(pageNo);
+                productList = getProductList(pageNo, searchPage);
+            }
+
+            // Since We can gather all the information require of a product directly from
+            // the rich search page, we do not need to visit product page individually.
             for (Element productElement : productList) {
                 String link = getProductLink(productElement);
                 String image = getProductImage(productElement);
@@ -308,6 +323,8 @@ public class BoxScrapper extends Thread {
                 String brand = getProductBrand(title);
                 String model = getProductModel(productElement);
 
+                String productId = model + website.getId();
+
                 // System.out.println(productLink);
                 System.out.println(String.format("""
                         [%s]------\r
@@ -317,21 +334,30 @@ public class BoxScrapper extends Thread {
                         Brand: %s\r
                         Model: %s\r
                         Price: $ %f\r
-                        Display size: %f"\r
+                        Display size: %f\"\r
                         Resolution: %s\r
                         Refresh Rate: %d Hz\r
                         ----------------
-                        """, website.getTitle(), link, image, title, brand, model, price, screenSize, displayResolution, refreshRate));
+                        """, website.getTitle(), link, image, title, brand, model, price, screenSize, displayResolution,
+                        refreshRate));
 
                 // We keep product which have brand, model and price
-                if (brand != null && model != null && price != null) {
-                    Product product = new Product(model, title, link, brand, website,
+                if (brand != null && model != null && model != "" && model != " " && price != null) {
+                    model = model.trim();
+
+                    Product product = new Product(productId, model, title, link, brand, website,
                             "", image, price);
 
-                    ProductDetails details = new ProductDetails(product, website, screenSize, displayResolution, refreshRate);
+                    ProductDetails details = new ProductDetails(product, website, screenSize, displayResolution,
+                            refreshRate);
 
-                    hibernate.addProduct(product);
-                    hibernate.addProductDetails(details);
+                    try {
+                        hibernate.addProduct(product);
+                        hibernate.addProductDetails(details);
+
+                    } catch (Exception e) {
+                        System.out.println("[ERROR] Failed to save product to db: " + e);
+                    }
 
                     total_products += 1;
 
@@ -342,6 +368,7 @@ public class BoxScrapper extends Thread {
 
         }
 
-        System.out.println("[" + website.getTitle() + "] FINISHED SCRAPPING: Save " + total_products + " valid products.");
+        System.out.println(
+                "[" + website.getTitle() + "] FINISHED SCRAPPING: Save " + total_products + " valid products.");
     }
 }

@@ -10,13 +10,12 @@ import static javax.persistence.GenerationType.SEQUENCE;
 @Entity(name = "product_details")
 public class ProductDetails {
     @Id
-    @SequenceGenerator(name = "product_details_sequence", sequenceName =
-            "product_details_sequence", allocationSize = 1)
+    @SequenceGenerator(name = "product_details_sequence", sequenceName = "product_details_sequence", allocationSize = 1)
     @GeneratedValue(strategy = SEQUENCE, generator = "product_details_sequence")
     @Column(name = "id", updatable = false)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.ALL)
     @JoinColumn(name = "product_id", nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Product product;
@@ -38,7 +37,8 @@ public class ProductDetails {
     public ProductDetails() {
     }
 
-    public ProductDetails(Product product, Website website, Double screenSize, String displayResolution, Integer refreshRate) {
+    public ProductDetails(Product product, Website website, Double screenSize, String displayResolution,
+            Integer refreshRate) {
         this.product = product;
         this.website = website;
         this.screenSize = screenSize;

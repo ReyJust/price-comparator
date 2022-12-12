@@ -1,13 +1,10 @@
 package com.price_comparator.Compr;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import java.util.Arrays;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Contains main method for application
@@ -41,17 +38,17 @@ public class ComprApplication {
 
 		hibernate.init();
 
-		AmazonScrapper amazonScrapper = (AmazonScrapper) context.getBean("amazonScrapper");
+		AmazonScrapper amazonScrapper = (AmazonScrapper) context.getBean("amazonScrapper"); // banned
 		NewEggScrapper newEggScrapper = (NewEggScrapper) context.getBean("newEggScrapper");
-		ArgosScrapper argosScrapper = (ArgosScrapper) context.getBean("argosScrapper");
-		BoxScrapper boxScrapper = (BoxScrapper) context.getBean("boxScrapper");
-		FlipKartScrapper flipKartScrapper = (FlipKartScrapper) context.getBean("flipKartScrapper");
+		ArgosScrapper argosScrapper = (ArgosScrapper) context.getBean("argosScrapper"); // 60
+		BoxScrapper boxScrapper = (BoxScrapper) context.getBean("boxScrapper"); // 208
+		FlipKartScrapper flipKartScrapper = (FlipKartScrapper) context.getBean("flipKartScrapper"); // 200
 
 		taskExecutor.execute(amazonScrapper);
-		taskExecutor.execute(newEggScrapper);
-		taskExecutor.execute(argosScrapper);
-		taskExecutor.execute(boxScrapper);
-		taskExecutor.execute(flipKartScrapper);
+		// taskExecutor.execute(newEggScrapper);
+		// taskExecutor.execute(argosScrapper);
+		// taskExecutor.execute(boxScrapper);
+		// taskExecutor.execute(flipKartScrapper);
 
 		taskExecutor.shutdown();
 		hibernate.shutDown();
