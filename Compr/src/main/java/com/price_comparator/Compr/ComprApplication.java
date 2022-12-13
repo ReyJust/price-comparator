@@ -14,7 +14,7 @@ public class ComprApplication {
 	/**
 	 * Root function running the app
 	 * 
-	 * @param args
+	 * @param args app params
 	 */
 	public static void main(String[] args) {
 		runApplicationAnnotationsConfig();

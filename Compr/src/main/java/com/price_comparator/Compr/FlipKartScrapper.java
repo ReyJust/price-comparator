@@ -13,6 +13,10 @@ import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+/**
+ * The Flipkart Scrapper Class
+ *
+ */
 @Component
 public class FlipKartScrapper extends Thread {
     private Website website;
@@ -47,7 +51,7 @@ public class FlipKartScrapper extends Thread {
     /**
      * Build a search page url using the page_id and get its html.
      *
-     * @param pageNo
+     * @param pageNo page number
      * @return Search Page
      */
     public Document getSearchPage(int pageNo) {
@@ -69,7 +73,7 @@ public class FlipKartScrapper extends Thread {
     /**
      * Using the page Url, get its content.
      *
-     * @param pageURL
+     * @param pageURL page url
      * @return page
      */
     public Document getPage(String pageURL) {
@@ -92,8 +96,10 @@ public class FlipKartScrapper extends Thread {
      * From the search page, return each product link found in the search result
      * div.
      *
-     * @param searchPage
-     * @return
+     * @param searchPage searching page
+     * @param pageNo     page number
+     * 
+     * @return links
      */
     public List<String> getProductLinks(int pageNo, Document searchPage) {
 
@@ -126,7 +132,8 @@ public class FlipKartScrapper extends Thread {
     }
 
     /**
-     *
+     * @param productPage product page
+     * 
      * @return Monitor image.
      */
     public String getProductImage(Document productPage) {
@@ -143,6 +150,7 @@ public class FlipKartScrapper extends Thread {
     }
 
     /**
+     * @param productPage product page
      *
      * @return Monitor title.
      */
@@ -151,6 +159,7 @@ public class FlipKartScrapper extends Thread {
     }
 
     /**
+     * @param title product title
      *
      * @return Cannot find Model and Brand separately, Using regex to filter the
      *         product title.
@@ -177,6 +186,7 @@ public class FlipKartScrapper extends Thread {
     }
 
     /**
+     * @param title product title
      *
      * @return Monitor brand.
      */
@@ -186,6 +196,7 @@ public class FlipKartScrapper extends Thread {
     }
 
     /**
+     * @param productPage product page
      *
      * @return Specification Table.
      */
@@ -202,6 +213,7 @@ public class FlipKartScrapper extends Thread {
     }
 
     /**
+     * @param productPage product page
      *
      * @return Display Features Specification Table.
      */
@@ -235,7 +247,7 @@ public class FlipKartScrapper extends Thread {
     }
 
     /**
-     * @param productPage
+     * @param productPage product page
      *
      * @return Monitor price.
      */
@@ -302,7 +314,7 @@ public class FlipKartScrapper extends Thread {
     }
 
     /**
-     * @param specTable product display part of specification table
+     * @param displaySpecTable product display part of specification table
      *
      * @return Monitor refresh rate in Hz.
      */
@@ -321,8 +333,10 @@ public class FlipKartScrapper extends Thread {
         return rate;
     }
 
-    /*
+    /**
      * Random Sleep between 1 and 3 seconds.
+     * 
+     * @return null
      */
     public Integer requestSleep() {
         Random rn = new Random();

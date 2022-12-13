@@ -66,7 +66,7 @@ public class Hibernate {
     /**
      * Adds a new website to the database
      *
-     * @param website
+     * @param website website object
      */
     public void addWebsite(Website website) {
         // Get a new Session instance from the session factory
@@ -87,9 +87,33 @@ public class Hibernate {
     }
 
     /**
+     * Get a website from the database
+     *
+     * @param websiteId id of the website in db
+     * 
+     * @return website object from db
+     */
+    public Website getWebsite(Long websiteId) {
+        // Get a new Session instance from the session factory
+        Session session = sessionFactory.getCurrentSession();
+
+        // Start transaction
+        session.beginTransaction();
+
+        // Add a Website to database
+        // session.save(website);
+        Website website = (Website) session.get(Website.class, websiteId);
+
+        // Close the session and release database connection
+        session.close();
+
+        return website;
+    }
+
+    /**
      * Adds a new product to the database
      *
-     * @param product
+     * @param product product object
      */
     public void addProduct(Product product) {
         // Get a new Session instance from the session factory
@@ -110,9 +134,33 @@ public class Hibernate {
     }
 
     /**
+     * Get a product from the database
+     *
+     * @param productId product id in db
+     * 
+     * @return product object from db
+     */
+    public Product getProduct(String productId) {
+        // Get a new Session instance from the session factory
+        Session session = sessionFactory.getCurrentSession();
+
+        // Start transaction
+        session.beginTransaction();
+
+        // Add a Website to database
+        // session.save(website);
+        Product product = (Product) session.get(Product.class, productId);
+
+        // Close the session and release database connection
+        session.close();
+
+        return product;
+    }
+
+    /**
      * Add product details to the database
      *
-     * @param details
+     * @param details product detail object
      */
     public void addProductDetails(ProductDetails details) {
         Session session = sessionFactory.getCurrentSession();
@@ -126,5 +174,29 @@ public class Hibernate {
 
         System.out.println("Product Details added to database.");
 
+    }
+
+    /**
+     * Get a product details from the database
+     *
+     * @param detailsId detail id in db
+     * 
+     * @return product details object from db
+     */
+    public ProductDetails getProductDetails(Long detailsId) {
+        // Get a new Session instance from the session factory
+        Session session = sessionFactory.getCurrentSession();
+
+        // Start transaction
+        session.beginTransaction();
+
+        // Add a Website to database
+        // session.save(website);
+        ProductDetails details = (ProductDetails) session.get(ProductDetails.class, detailsId);
+
+        // Close the session and release database connection
+        session.close();
+
+        return details;
     }
 }

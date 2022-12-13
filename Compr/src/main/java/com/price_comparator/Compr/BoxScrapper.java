@@ -11,6 +11,10 @@ import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+/**
+ * The Box Scrapper Class
+ *
+ */
 @Component
 public class BoxScrapper extends Thread {
     private Website website;
@@ -41,7 +45,7 @@ public class BoxScrapper extends Thread {
     /**
      * Using the page Url, get its content.
      *
-     * @param pageURL
+     * @param pageURL page url
      * @return page
      */
     public Document getPage(String pageURL) {
@@ -65,7 +69,8 @@ public class BoxScrapper extends Thread {
     /**
      * Build a search page url using the page_id and get its html.
      *
-     * @param pageNo
+     * @param pageNo page number
+     * 
      * @return Search Page
      */
     public Document getSearchPage(int pageNo) {
@@ -85,7 +90,8 @@ public class BoxScrapper extends Thread {
     /**
      * Retrieve the search result secton from the search page.
      *
-     * @param pageNo
+     * @param pageNo page number
+     * 
      * @return Product List
      */
     public Elements getProductList(int pageNo, Document searchPage) {
@@ -108,7 +114,7 @@ public class BoxScrapper extends Thread {
     /**
      * From an element of the search list get the product url
      *
-     * @param productElement
+     * @param productElement product element
      * @return
      */
     public String getProductLink(Element productElement) {
@@ -125,7 +131,7 @@ public class BoxScrapper extends Thread {
     }
 
     /**
-     * @param productElement
+     * @param productElement product element
      *
      * @return Monitor image.
      */
@@ -143,7 +149,7 @@ public class BoxScrapper extends Thread {
     }
 
     /**
-     * @param productElement
+     * @param productElement product element
      *
      * @return Monitor title.
      */
@@ -161,6 +167,8 @@ public class BoxScrapper extends Thread {
     }
 
     /**
+     * @param title product title
+     * 
      * @return Monitor brand.
      */
     public String getProductBrand(String title) {
@@ -170,6 +178,8 @@ public class BoxScrapper extends Thread {
     }
 
     /**
+     * @param productElement product element
+     * 
      * @return Monitor model.
      */
     public String getProductModel(Element productElement) {
@@ -186,6 +196,8 @@ public class BoxScrapper extends Thread {
     }
 
     /**
+     * @param productElement product element
+     * 
      * @return Monitor price.
      */
     public Double getProductPrice(Element productElement) {
@@ -203,7 +215,7 @@ public class BoxScrapper extends Thread {
     }
 
     /**
-     * @param productElement
+     * @param productElement product element
      *
      * @return Monitor size in inches.
      */
@@ -222,7 +234,7 @@ public class BoxScrapper extends Thread {
     }
 
     /**
-     * @param productElement
+     * @param productElement product element
      *
      * @return Monitor display resolution in pixels.
      */
@@ -247,7 +259,7 @@ public class BoxScrapper extends Thread {
     }
 
     /**
-     * @param productElement
+     * @param productElement product element
      *
      * @return Monitor refresh rate in Hz.
      */
@@ -270,8 +282,10 @@ public class BoxScrapper extends Thread {
         return rate;
     }
 
-    /*
+    /**
      * Random Sleep between 1 and 3 seconds.
+     * 
+     * @return null
      */
     public Integer requestSleep() {
         Random rn = new Random();

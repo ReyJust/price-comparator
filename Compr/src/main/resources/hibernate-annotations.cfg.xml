@@ -4,7 +4,7 @@
   <session-factory>
     <!-- Database connection properties - Driver, URL, user, password -->
     <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
-    <property name="hibernate.connection.url">jdbc:postgresql://localhost:5432/price_comparatorr</property>
+    <property name="hibernate.connection.url">jdbc:postgresql://localhost:5432/price_comparator</property>
     <property name="hibernate.connection.username">mdx_user</property>
     <property name="hibernate.connection.password">password</property>
 
@@ -17,7 +17,7 @@
     <!-- Outputs the SQL queries, should be disabled in Production -->
     <property name="hibernate.show_sql">false</property>
 
-    <property name="hbm2ddl.auto">update</property>
+    <property name="hbm2ddl.auto">create</property>
 
     <!-- Different RDBMSs have variations in the SQL that they support - specify MySQL-->
     <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>

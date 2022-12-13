@@ -29,8 +29,6 @@ public class AmazonScrapper extends Thread {
     /**
      * The scrapper constructor
      *
-     * @param website
-     * @param userAgent
      */
     public AmazonScrapper() {
         this.website = new Website("Amazon",
@@ -54,7 +52,7 @@ public class AmazonScrapper extends Thread {
     /**
      * Build a search page url using the page_id and get its html.
      *
-     * @param pageNo
+     * @param pageNo page number
      * @return Search Page
      */
     public Document getSearchPage(int pageNo) {
@@ -75,7 +73,7 @@ public class AmazonScrapper extends Thread {
     /**
      * Using the page Url, get its content.
      *
-     * @param pageURL
+     * @param pageURL page url
      * @return page
      */
     public Document getPage(String pageURL) {
@@ -98,8 +96,9 @@ public class AmazonScrapper extends Thread {
      * From the search page, return each product link found in the search result
      * div.
      *
-     * @param pageNo
-     * @param searchPage
+     * @param pageNo     page number
+     * @param searchPage search page
+     * 
      * @return productLinks
      */
     public List<String> getProductLinks(int pageNo, Document searchPage) {
@@ -134,7 +133,7 @@ public class AmazonScrapper extends Thread {
     /**
      * Get the product image
      *
-     * @param productPage
+     * @param productPage product page
      *
      * @return Monitor image.
      */
@@ -145,7 +144,7 @@ public class AmazonScrapper extends Thread {
     /**
      * Get the product title
      *
-     * @param productPage
+     * @param productPage product page
      *
      * @return Monitor title.
      */
@@ -156,7 +155,7 @@ public class AmazonScrapper extends Thread {
     /**
      * Get the product brand
      *
-     * @param productPage
+     * @param productPage product page
      *
      * @return Monitor brand.
      */
@@ -167,7 +166,7 @@ public class AmazonScrapper extends Thread {
     /**
      * Get the product model
      *
-     * @param productDetails
+     * @param productDetails product details
      *
      * @return Monitor model.
      */
@@ -193,7 +192,7 @@ public class AmazonScrapper extends Thread {
     /**
      * Get the product price
      *
-     * @param productPage
+     * @param productPage product page
      *
      * @return Monitor price.
      */
@@ -216,7 +215,7 @@ public class AmazonScrapper extends Thread {
      *
      * Get the product screen size
      *
-     * @param productPage
+     * @param productPage product page
      *
      * @return Monitor size in inches.
      */
@@ -237,7 +236,7 @@ public class AmazonScrapper extends Thread {
      *
      * Get the product display resolution
      *
-     * @param productPage
+     * @param productPage product page
      *
      * @return Monitor display resolution in pixels.
      */
@@ -257,7 +256,7 @@ public class AmazonScrapper extends Thread {
      *
      * Get the product refresh rate
      *
-     * @param productPage
+     * @param productPage product page
      *
      * @return Monitor refresh rate in Hz.
      */
@@ -274,7 +273,7 @@ public class AmazonScrapper extends Thread {
         return rate;
     }
 
-    /*
+    /**
      * Random Sleep between 1 and 3 seconds.
      *
      * @return null

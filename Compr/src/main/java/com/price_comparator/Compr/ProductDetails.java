@@ -46,6 +46,10 @@ public class ProductDetails {
         this.refreshRate = refreshRate;
     }
 
+    public Long getId() {
+        return id;
+    }
+
     public Product getProduct() {
         return product;
     }

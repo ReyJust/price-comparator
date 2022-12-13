@@ -14,7 +14,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Class for agos Scrapper
+ * The Argos Scrapper Class
+ *
  */
 @Component
 public class ArgosScrapper extends Thread {
@@ -51,7 +52,8 @@ public class ArgosScrapper extends Thread {
     /**
      * Build a search page url using the page_id and get its html.
      *
-     * @param pageNo
+     * @param pageNo page product
+     * 
      * @return Search Page
      */
     public Document getSearchPage(int pageNo) {
@@ -67,7 +69,7 @@ public class ArgosScrapper extends Thread {
     /**
      * Using the page Url, get its content.
      *
-     * @param pageURL
+     * @param pageURL page url
      * @return page
      */
     public Document getPage(String pageURL) {
@@ -88,7 +90,7 @@ public class ArgosScrapper extends Thread {
      * From the search page, return each product link found in the search result
      * div.
      *
-     * @param searchPage
+     * @param searchPage search page
      *
      * @return productLinks
      */
@@ -125,7 +127,7 @@ public class ArgosScrapper extends Thread {
     /**
      * Get product image
      *
-     * @param productPage
+     * @param productPage product page
      *
      * @return Monitor image.
      */
@@ -146,7 +148,7 @@ public class ArgosScrapper extends Thread {
     /**
      * Get the product title
      *
-     * @param productPage
+     * @param productPage product page
      *
      * @return Monitor title.
      */
@@ -158,7 +160,7 @@ public class ArgosScrapper extends Thread {
      * Cannot find Model and Brand separately, Using regex to filter the
      * product title.
      *
-     * @param title
+     * @param title product title
      *
      * @return title
      */
@@ -186,7 +188,7 @@ public class ArgosScrapper extends Thread {
     /**
      * Get the product brand
      * 
-     * @param brandModel
+     * @param brandModel model brand string
      *
      * @return Monitor brand.
      */
@@ -204,7 +206,7 @@ public class ArgosScrapper extends Thread {
     /**
      * Get the product brand
      *
-     * @param brandModel
+     * @param brandModel model brand string
      *
      * @return Monitor model.
      */
@@ -221,7 +223,7 @@ public class ArgosScrapper extends Thread {
     /**
      * Get the product price
      *
-     * @param productPage
+     * @param productPage product page
      *
      * @return Monitor price.
      */
@@ -242,7 +244,7 @@ public class ArgosScrapper extends Thread {
     /**
      * Get the product screen size
      *
-     * @param productPage
+     * @param productPage product page
      *
      * @return Monitor size in inches.
      */
@@ -262,7 +264,7 @@ public class ArgosScrapper extends Thread {
     /**
      * Get the product refresh display resolution
      *
-     * @param productPage
+     * @param productPage product page
      *
      * @return Monitor display resolution in pixels.
      */
@@ -290,7 +292,7 @@ public class ArgosScrapper extends Thread {
     /**
      * Get the product refresh rate
      *
-     * @param productPage
+     * @param productPage product page
      *
      * @return Monitor refresh rate in Hz.
      */

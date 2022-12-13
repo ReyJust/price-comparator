@@ -13,6 +13,10 @@ import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+/**
+ * The New Egg Scrapper Class
+ *
+ */
 @Component
 public class NewEggScrapper extends Thread {
     private Website website;
@@ -44,7 +48,7 @@ public class NewEggScrapper extends Thread {
     /**
      * Build a search page url using the page_id and get its html.
      *
-     * @param pageNo
+     * @param pageNo page number
      * @return Search Page
      */
     public Document getSearchPage(int pageNo) {
@@ -65,7 +69,7 @@ public class NewEggScrapper extends Thread {
     /**
      * Using the page Url, get its content.
      *
-     * @param pageURL
+     * @param pageURL page url
      * @return page
      */
     public Document getPage(String pageURL) {
@@ -89,7 +93,7 @@ public class NewEggScrapper extends Thread {
      * div.
      *
      * @param pageNo     page Number to fetch
-     * @param searchPage
+     * @param searchPage searching page
      * 
      * @return Page product links
      */
@@ -123,7 +127,7 @@ public class NewEggScrapper extends Thread {
     }
 
     /**
-     * @param productPage
+     * @param productPage product page
      * 
      * @return Monitor image.
      */
@@ -139,7 +143,7 @@ public class NewEggScrapper extends Thread {
     }
 
     /**
-     * @param productPage
+     * @param productPage product page
      * 
      * @return Monitor title.
      */
@@ -202,7 +206,7 @@ public class NewEggScrapper extends Thread {
     }
 
     /**
-     * @param productPage
+     * @param productPage product page
      * 
      * @return Monitor price.
      */
@@ -221,6 +225,8 @@ public class NewEggScrapper extends Thread {
     }
 
     /**
+     * Product Screen size
+     * 
      * @param productDisplayTable display part of spec table
      * 
      * @return Monitor size in inches.
@@ -281,8 +287,10 @@ public class NewEggScrapper extends Thread {
         return rate;
     }
 
-    /*
+    /**
      * Random Sleep between 1 and 3 seconds.
+     * 
+     * @return null
      */
     public Integer requestSleep() {
         Random rn = new Random();
