@@ -38,17 +38,17 @@ public class ComprApplication {
 
 		hibernate.init();
 
-		AmazonScrapper amazonScrapper = (AmazonScrapper) context.getBean("amazonScrapper"); // banned
+		AmazonScrapper amazonScrapper = (AmazonScrapper) context.getBean("amazonScrapper");
 		NewEggScrapper newEggScrapper = (NewEggScrapper) context.getBean("newEggScrapper");
-		ArgosScrapper argosScrapper = (ArgosScrapper) context.getBean("argosScrapper"); // 60
-		BoxScrapper boxScrapper = (BoxScrapper) context.getBean("boxScrapper"); // 208
-		FlipKartScrapper flipKartScrapper = (FlipKartScrapper) context.getBean("flipKartScrapper"); // 200
+		ArgosScrapper argosScrapper = (ArgosScrapper) context.getBean("argosScrapper");
+		BoxScrapper boxScrapper = (BoxScrapper) context.getBean("boxScrapper");
+		FlipKartScrapper flipKartScrapper = (FlipKartScrapper) context.getBean("flipKartScrapper");
 
 		taskExecutor.execute(amazonScrapper);
-		// taskExecutor.execute(newEggScrapper);
-		// taskExecutor.execute(argosScrapper);
-		// taskExecutor.execute(boxScrapper);
-		// taskExecutor.execute(flipKartScrapper);
+		taskExecutor.execute(newEggScrapper);
+		taskExecutor.execute(argosScrapper);
+		taskExecutor.execute(boxScrapper);
+		taskExecutor.execute(flipKartScrapper);
 
 		taskExecutor.shutdown();
 		hibernate.shutDown();

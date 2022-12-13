@@ -1,6 +1,5 @@
 package com.price_comparator.Compr;
 
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -50,7 +49,6 @@ public class FlipKartScrapper extends Thread {
      *
      * @param pageNo
      * @return Search Page
-     * @throws FileNotFoundException
      */
     public Document getSearchPage(int pageNo) {
         String url;
@@ -220,7 +218,8 @@ public class FlipKartScrapper extends Thread {
     }
 
     /**
-     *
+     * @param specTable product specification table
+     * 
      * @return Monitor model.
      */
     public String getProductModel(Elements specTable) {
@@ -236,6 +235,7 @@ public class FlipKartScrapper extends Thread {
     }
 
     /**
+     * @param productPage
      *
      * @return Monitor price.
      */
@@ -255,7 +255,8 @@ public class FlipKartScrapper extends Thread {
     }
 
     /**
-     *
+     * @param specTable product specification table
+     * 
      * @return Monitor size in inches.
      */
     public Double getProductScreenSize(Elements specTable) {
@@ -277,11 +278,12 @@ public class FlipKartScrapper extends Thread {
     }
 
     /**
-     *
+     * @param specTable product specification table
+     * 
      * @return Monitor display resolution in pixels.
      */
     public String getProductDisplayResolution(Elements specTable) {
-        String res = null;
+        String res = "";
 
         try {
             res = specTable.select("table > tbody > tr > td:contains(Resolution) + td > ul > li").first().text();
@@ -300,6 +302,7 @@ public class FlipKartScrapper extends Thread {
     }
 
     /**
+     * @param specTable product display part of specification table
      *
      * @return Monitor refresh rate in Hz.
      */

@@ -397,6 +397,10 @@ public class ArgosScrapper extends Thread {
                             refreshRate);
 
                     try {
+                        // Products with an already existing id (Model+website_id) are simply not
+                        // inserted.
+                        // Using a try catch, we prevent the code from crashing when the product is
+                        // uncessfully inserted.
                         hibernate.addProduct(product);
                         hibernate.addProductDetails(details);
 

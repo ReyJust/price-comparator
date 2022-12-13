@@ -88,8 +88,10 @@ public class NewEggScrapper extends Thread {
      * From the search page, return each product link found in the search result
      * div.
      *
+     * @param pageNo     page Number to fetch
      * @param searchPage
-     * @return
+     * 
+     * @return Page product links
      */
     public List<String> getProductLinks(int pageNo, Document searchPage) {
         // Select the product list.
@@ -121,6 +123,8 @@ public class NewEggScrapper extends Thread {
     }
 
     /**
+     * @param productPage
+     * 
      * @return Monitor image.
      */
     public String getProductImage(Document productPage) {
@@ -135,6 +139,8 @@ public class NewEggScrapper extends Thread {
     }
 
     /**
+     * @param productPage
+     * 
      * @return Monitor title.
      */
     public String getProductTitle(Document productPage) {
@@ -150,6 +156,8 @@ public class NewEggScrapper extends Thread {
     }
 
     /**
+     * @param productModelTable model spec table
+     * 
      * @return Monitor brand.
      */
     public String getProductBrand(Element productModelTable) {
@@ -172,6 +180,9 @@ public class NewEggScrapper extends Thread {
     }
 
     /**
+     * @param productModelTable model spec table
+     * @param brand             Product Brand
+     * 
      * @return Monitor model.
      */
     public String getProductModel(Element productModelTable, String brand) {
@@ -191,6 +202,8 @@ public class NewEggScrapper extends Thread {
     }
 
     /**
+     * @param productPage
+     * 
      * @return Monitor price.
      */
     public Double getProductPrice(Document productPage) {
@@ -208,6 +221,8 @@ public class NewEggScrapper extends Thread {
     }
 
     /**
+     * @param productDisplayTable display part of spec table
+     * 
      * @return Monitor size in inches.
      */
     public Double getProductScreenSize(Element productDisplayTable) {
@@ -224,6 +239,8 @@ public class NewEggScrapper extends Thread {
     }
 
     /**
+     * @param productDisplayTable display part of spec table
+     * 
      * @return Monitor display resolution in pixels.
      */
     public String getProductDisplayResolution(Element productDisplayTable) {
@@ -247,6 +264,8 @@ public class NewEggScrapper extends Thread {
     }
 
     /**
+     * @param productDisplayTable display part of spec table
+     * 
      * @return Monitor refresh rate in Hz.
      */
     public Integer getProductRefreshRate(Element productDisplayTable) {

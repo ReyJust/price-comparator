@@ -28,16 +28,9 @@ public class Product {
     @Column(name = "brand", nullable = false)
     private String brand;
 
-    // @ManyToOne(fetch = FetchType.LAZY, optional = false, cascade =
-    // CascadeType.ALL)
-    // @JoinColumn(name = "website_id", nullable = false)
-    // @OnDelete(action = OnDeleteAction.CASCADE)
     @ManyToOne()
     @JoinColumn(name = "website_id")
     private Website website;
-
-    // @Column(name = "website_id", nullable = false)
-    // private int websiteId;
 
     @Column(name = "description", nullable = true)
     private String description;
@@ -47,10 +40,6 @@ public class Product {
 
     @Column(name = "price", nullable = true)
     private double price;
-
-    // @OneToOne(mappedBy = "product", cascade = CascadeType.ALL)
-    // @PrimaryKeyJoinColumn
-    // private ProductDetails productDetails;
 
     public Product() {
     }

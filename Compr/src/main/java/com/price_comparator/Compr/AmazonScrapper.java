@@ -1,7 +1,6 @@
 package com.price_comparator.Compr;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -30,8 +29,8 @@ public class AmazonScrapper extends Thread {
     /**
      * The scrapper constructor
      *
-     * @param {Website} website
-     * @param {String}  userAgent
+     * @param website
+     * @param userAgent
      */
     public AmazonScrapper() {
         this.website = new Website("Amazon",
@@ -55,7 +54,7 @@ public class AmazonScrapper extends Thread {
     /**
      * Build a search page url using the page_id and get its html.
      *
-     * @param {int} pageNo
+     * @param pageNo
      * @return Search Page
      */
     public Document getSearchPage(int pageNo) {
@@ -76,7 +75,7 @@ public class AmazonScrapper extends Thread {
     /**
      * Using the page Url, get its content.
      *
-     * @param {String} pageURL
+     * @param pageURL
      * @return page
      */
     public Document getPage(String pageURL) {
@@ -99,8 +98,8 @@ public class AmazonScrapper extends Thread {
      * From the search page, return each product link found in the search result
      * div.
      *
-     * @param {int}      pageNo
-     * @param {Document} searchPage
+     * @param pageNo
+     * @param searchPage
      * @return productLinks
      */
     public List<String> getProductLinks(int pageNo, Document searchPage) {
@@ -350,6 +349,7 @@ public class AmazonScrapper extends Thread {
                         displayResolution,
                         refreshRate));
 
+                // Data cleaning
                 // We keep product which have brand, model and price
                 if (brand != null && model != null && model != "" && model != " " && price != null) {
                     model = model.trim();
@@ -361,6 +361,10 @@ public class AmazonScrapper extends Thread {
                             refreshRate);
 
                     try {
+                        // Products with an already existing id (Model+website_id) are simply not
+                        // inserted.
+                        // Using a try catch, we prevent the code from crashing when the product is
+                        // uncessfully inserted.
                         hibernate.addProduct(product);
                         hibernate.addProductDetails(details);
 
