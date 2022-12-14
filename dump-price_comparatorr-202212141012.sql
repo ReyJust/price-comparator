@@ -5,7 +5,30 @@
 -- Dumped from database version 14.5 (Ubuntu 14.5-0ubuntu0.22.04.1)
 -- Dumped by pg_dump version 14.5 (Ubuntu 14.5-0ubuntu0.22.04.1)
 
--- Started on 2022-12-14 09:37:34 +04
+-- Started on 2022-12-14 10:12:12 +04
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- TOC entry 3376 (class 1262 OID 203513)
+-- Name: price_comparatorr; Type: DATABASE; Schema: -; Owner: postgres
+--
+
+CREATE DATABASE price_comparatorr WITH TEMPLATE = template0 ENCODING = 'UTF8' LOCALE = 'en_US.UTF-8';
+
+
+ALTER DATABASE price_comparatorr OWNER TO postgres;
+
+\connect price_comparatorr
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -29,7 +52,7 @@ CREATE SCHEMA public;
 ALTER SCHEMA public OWNER TO postgres;
 
 --
--- TOC entry 3376 (class 0 OID 0)
+-- TOC entry 3378 (class 0 OID 0)
 -- Dependencies: 3
 -- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: postgres
 --
@@ -1401,7 +1424,7 @@ COPY public.website (id, title, url, website_image_url) FROM stdin;
 
 
 --
--- TOC entry 3377 (class 0 OID 0)
+-- TOC entry 3379 (class 0 OID 0)
 -- Dependencies: 211
 -- Name: product_details_sequence; Type: SEQUENCE SET; Schema: public; Owner: mdx_user
 --
@@ -1410,7 +1433,7 @@ SELECT pg_catalog.setval('public.product_details_sequence', 602, true);
 
 
 --
--- TOC entry 3378 (class 0 OID 0)
+-- TOC entry 3380 (class 0 OID 0)
 -- Dependencies: 210
 -- Name: website_sequence; Type: SEQUENCE SET; Schema: public; Owner: mdx_user
 --
@@ -1481,7 +1504,16 @@ ALTER TABLE ONLY public.product_details
     ADD CONSTRAINT fkrhahp4f26x99lqf0kybcs79rb FOREIGN KEY (product_id) REFERENCES public.product(id) ON DELETE CASCADE;
 
 
--- Completed on 2022-12-14 09:37:34 +04
+--
+-- TOC entry 3377 (class 0 OID 0)
+-- Dependencies: 3376
+-- Name: DATABASE price_comparatorr; Type: ACL; Schema: -; Owner: postgres
+--
+
+GRANT ALL ON DATABASE price_comparatorr TO mdx_user;
+
+
+-- Completed on 2022-12-14 10:12:12 +04
 
 --
 -- PostgreSQL database dump complete
