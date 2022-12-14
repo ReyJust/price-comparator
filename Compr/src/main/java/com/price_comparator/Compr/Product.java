@@ -2,11 +2,6 @@ package com.price_comparator.Compr;
 
 import javax.persistence.*;
 
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
-
-import static javax.persistence.GenerationType.SEQUENCE;
-
 @Entity(name = "product")
 public class Product {
     // @SequenceGenerator(name = "website_sequence", sequenceName =

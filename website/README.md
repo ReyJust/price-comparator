@@ -1,6 +1,6 @@
 # price-comparator
 
-This template should help get you started developing with Vue 3 in Vite.
+Front End for price comparator application
 
 ## Recommended IDE Setup
 
